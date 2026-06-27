@@ -1,0 +1,351 @@
+﻿@model BloodCare.Models.Pendonor
+
+@{
+    ViewData["Title"] = "Edit Pendonor";
+}
+
+<div class="bloodcare-form-page">
+    <div class="form-hero">
+        <div>
+            <span class="page-label">BloodCare Update</span>
+            <h1>Edit Data Pendonor</h1>
+            <p>Perbarui informasi pendonor agar data tetap akurat dan mudah digunakan dalam proses pencarian donor darah.</p>
+        </div>
+
+        <a asp-action="Index" class="btn-back">Kembali</a>
+    </div>
+
+    <div class="form-card">
+        <div class="form-card-header">
+            <h2>Form Edit Pendonor</h2>
+            <p>Pastikan perubahan data sudah benar sebelum disimpan.</p>
+        </div>
+
+        <form asp-action="Edit" class="modern-form">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input type="hidden" asp-for="Id" />
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label asp-for="Nama">Nama Lengkap</label>
+                    <input asp-for="Nama" class="form-control modern-input" />
+                    <span asp-validation-for="Nama" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Umur">Umur</label>
+                    <input asp-for="Umur" type="number" class="form-control modern-input" />
+                    <span asp-validation-for="Umur" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label>Jenis Kelamin</label>
+                    <div class="radio-card-group">
+                        <label class="radio-card">
+                            <input type="radio" asp-for="JenisKelamin" value="Laki-laki" />
+                            <span>Laki-laki</span>
+                        </label>
+
+                        <label class="radio-card">
+                            <input type="radio" asp-for="JenisKelamin" value="Perempuan" />
+                            <span>Perempuan</span>
+                        </label>
+                    </div>
+                    <span asp-validation-for="JenisKelamin" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="GolonganDarah">Golongan Darah</label>
+                    <select asp-for="GolonganDarah" class="form-select modern-input">
+                        <option value="">Pilih Golongan Darah</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="AB">AB</option>
+                        <option value="O">O</option>
+                    </select>
+                    <span asp-validation-for="GolonganDarah" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Rhesus">Rhesus</label>
+                    <select asp-for="Rhesus" class="form-select modern-input">
+                        <option value="">Pilih Rhesus</option>
+                        <option value="Positif (+)">Positif (+)</option>
+                        <option value="Negatif (-)">Negatif (-)</option>
+                    </select>
+                    <span asp-validation-for="Rhesus" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="NoHP">Nomor HP</label>
+                    <input asp-for="NoHP" class="form-control modern-input" />
+                    <span asp-validation-for="NoHP" class="text-danger"></span>
+                </div>
+
+                <div class="form-group full">
+                    <label asp-for="Alamat">Alamat</label>
+                    <textarea asp-for="Alamat" class="form-control modern-input textarea"></textarea>
+                    <span asp-validation-for="Alamat" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="TanggalDonorTerakhir">Tanggal Donor Terakhir</label>
+                    <input asp-for="TanggalDonorTerakhir" type="datetime-local" class="form-control modern-input" />
+                    <span asp-validation-for="TanggalDonorTerakhir" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">Simpan Perubahan</button>
+                <a asp-action="Index" class="btn-cancel">Batal</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    body {
+        background: linear-gradient(135deg, #fff5f5 0%, #ffffff 45%, #f8fafc 100%);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .bloodcare-form-page {
+        padding: 28px 0 60px;
+    }
+
+    .form-hero {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 24px;
+        padding: 30px;
+        border-radius: 30px;
+        background: radial-gradient(circle at top right, rgba(255,255,255,0.28), transparent 28%), linear-gradient(135deg, #991b1b, #ef4444);
+        color: white;
+        box-shadow: 0 22px 50px rgba(185, 28, 28, 0.25);
+    }
+
+    .page-label {
+        display: inline-block;
+        margin-bottom: 10px;
+        padding: 7px 14px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.18);
+        font-size: 13px;
+        letter-spacing: 0.5px;
+    }
+
+    .form-hero h1 {
+        margin: 0;
+        font-size: 36px;
+        font-weight: 850;
+    }
+
+    .form-hero p {
+        margin: 8px 0 0;
+        opacity: 0.92;
+        max-width: 650px;
+    }
+
+    .btn-back {
+        text-decoration: none;
+        background: white;
+        color: #b91c1c;
+        padding: 13px 19px;
+        border-radius: 16px;
+        font-weight: 800;
+        box-shadow: 0 12px 25px rgba(0,0,0,0.14);
+        transition: 0.2s;
+        white-space: nowrap;
+    }
+
+        .btn-back:hover {
+            transform: translateY(-2px);
+            color: #991b1b;
+        }
+
+    .form-card {
+        border-radius: 30px;
+        background: rgba(255,255,255,0.95);
+        border: 1px solid #fee2e2;
+        box-shadow: 0 20px 55px rgba(15, 23, 42, 0.09);
+        overflow: hidden;
+    }
+
+    .form-card-header {
+        padding: 26px 30px;
+        border-bottom: 1px solid #fee2e2;
+        background: linear-gradient(180deg, #ffffff, #fff7f7);
+    }
+
+        .form-card-header h2 {
+            margin: 0;
+            font-size: 25px;
+            font-weight: 850;
+            color: #111827;
+        }
+
+        .form-card-header p {
+            margin: 6px 0 0;
+            color: #64748b;
+        }
+
+    .modern-form {
+        padding: 30px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 22px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+        .form-group.full {
+            grid-column: span 3;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 800;
+            color: #334155;
+        }
+
+    .modern-input {
+        min-height: 48px;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        padding: 12px 15px;
+        color: #111827;
+        background: #ffffff;
+        transition: 0.2s;
+    }
+
+        .modern-input:focus {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 0.18rem rgba(239, 68, 68, 0.16);
+        }
+
+    .textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .radio-card-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .radio-card {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        min-height: 48px;
+        padding: 12px 14px;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        background: white;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+        .radio-card:hover {
+            border-color: #ef4444;
+            background: #fff7f7;
+        }
+
+        .radio-card input {
+            accent-color: #dc2626;
+        }
+
+        .radio-card span {
+            font-weight: 700;
+            color: #334155;
+        }
+
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 30px;
+        padding-top: 22px;
+        border-top: 1px solid #f1f5f9;
+    }
+
+    .btn-submit {
+        border: none;
+        padding: 13px 22px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #dc2626, #fb7185);
+        color: white;
+        font-weight: 850;
+        box-shadow: 0 12px 24px rgba(220, 38, 38, 0.25);
+        transition: 0.2s;
+    }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 30px rgba(220, 38, 38, 0.3);
+        }
+
+    .btn-cancel {
+        text-decoration: none;
+        padding: 13px 22px;
+        border-radius: 16px;
+        background: #f1f5f9;
+        color: #334155;
+        font-weight: 800;
+        transition: 0.2s;
+    }
+
+        .btn-cancel:hover {
+            background: #e2e8f0;
+            color: #111827;
+        }
+
+    @@media (max-width: 992px) {
+        .form-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .form-group.full {
+            grid-column: span 2;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .form-hero {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group.full {
+            grid-column: span 1;
+        }
+
+        .form-hero h1 {
+            font-size: 28px;
+        }
+
+        .radio-card-group {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

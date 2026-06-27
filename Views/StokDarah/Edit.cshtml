@@ -1,0 +1,75 @@
+﻿@model BloodCare.Models.StokDarah
+
+@{
+    ViewData["Title"] = "Edit Stok Darah";
+}
+
+<section class="blood-hero">
+    <div>
+        <span class="badge-soft">BloodCare Stock</span>
+        <h1>Edit Stok Darah</h1>
+        <p>Perbarui data stok darah yang tersimpan di sistem.</p>
+    </div>
+
+    <a asp-action="Index" class="btn-hero">Kembali</a>
+</section>
+
+<section class="form-card">
+    <div class="form-header">
+        <h2>Form Edit Stok Darah</h2>
+        <p>Pastikan perubahan data sudah benar sebelum disimpan.</p>
+    </div>
+
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="Id" />
+
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label asp-for="GolonganDarah"></label>
+                <select asp-for="GolonganDarah" class="form-control">
+                    <option value="">Pilih Golongan Darah</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="AB">AB</option>
+                    <option value="O">O</option>
+                </select>
+                <span asp-validation-for="GolonganDarah" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Rhesus"></label>
+                <select asp-for="Rhesus" class="form-control">
+                    <option value="">Pilih Rhesus</option>
+                    <option value="Positif (+)">Positif (+)</option>
+                    <option value="Negatif (-)">Negatif (-)</option>
+                </select>
+                <span asp-validation-for="Rhesus" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="JumlahKantong"></label>
+                <input asp-for="JumlahKantong" class="form-control" />
+                <span asp-validation-for="JumlahKantong" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="TanggalMasuk"></label>
+                <input asp-for="TanggalMasuk" type="date" class="form-control" />
+                <span asp-validation-for="TanggalMasuk" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="TanggalKadaluarsa"></label>
+                <input asp-for="TanggalKadaluarsa" type="date" class="form-control" />
+                <span asp-validation-for="TanggalKadaluarsa" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-save">Simpan Perubahan</button>
+            <a asp-action="Index" class="btn-cancel">Batal</a>
+        </div>
+    </form>
+</section>

@@ -1,0 +1,316 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+<style>
+    .modern-footer {
+        margin-top: 60px;
+        padding: 20px 0;
+        display: flex;
+        justify-content: center;
+    }
+
+    .footer-container {
+        width: 90%;
+        max-width: 1100px;
+        padding: 20px 30px;
+        border-radius: 25px;
+
+        /* efek transparan elegan */
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(12px);
+
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .footer-left h2 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 800;
+        color: #991b1b;
+
+        /* efek bold transparan classy */
+        opacity: 0.85;
+        letter-spacing: 0.5px;
+    }
+
+    .footer-left p {
+        margin: 5px 0 0;
+        font-size: 13px;
+        color: #64748b;
+    }
+
+    .footer-right {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        font-weight: 600;
+        color: #334155;
+    }
+
+    .footer-right a {
+        text-decoration: none;
+        padding: 6px 14px;
+        border-radius: 12px;
+        background: #f1f5f9;
+        color: #111827;
+        transition: 0.2s;
+    }
+
+    .footer-right a:hover {
+        background: #e2e8f0;
+    }
+
+    @media (max-width: 768px) {
+        .footer-container {
+            flex-direction: column;
+            gap: 10px;
+            text-align: center;
+        }
+    }
+
+.blood-hero {
+    max-width: 1100px;
+    margin: 45px auto 25px;
+    padding: 45px;
+    border-radius: 28px;
+    background: linear-gradient(135deg, #c91f26, #ff4148);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 25px 60px rgba(201, 31, 38, 0.25);
+}
+
+    .blood-hero h1 {
+        font-size: 42px;
+        font-weight: 800;
+        margin-top: 15px;
+    }
+
+    .blood-hero p {
+        font-size: 18px;
+        margin: 0;
+    }
+
+.badge-soft {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-weight: 600;
+}
+
+.btn-hero {
+    background: white;
+    color: #c91f26;
+    padding: 18px 28px;
+    border-radius: 16px;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.stats-grid {
+    max-width: 1100px;
+    margin: 0 auto 25px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+}
+
+.stat-card {
+    background: white;
+    padding: 28px;
+    border-radius: 22px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.06);
+    border: 1px solid #ffe1e1;
+}
+
+    .stat-card p {
+        color: #60708a;
+        margin-bottom: 10px;
+    }
+
+    .stat-card h2 {
+        font-weight: 800;
+        color: #061733;
+    }
+
+.table-card,
+.form-card {
+    max-width: 1100px;
+    margin: 30px auto;
+    background: white;
+    border-radius: 28px;
+    overflow: hidden;
+    border: 1px solid #ffe1e1;
+    box-shadow: 0 25px 70px rgba(0,0,0,0.08);
+}
+
+.table-header,
+.form-header {
+    padding: 32px 36px;
+    border-bottom: 1px solid #ffe1e1;
+}
+
+    .table-header h2,
+    .form-header h2 {
+        font-weight: 800;
+        color: #061733;
+    }
+
+    .table-header p,
+    .form-header p {
+        color: #60708a;
+        margin: 0;
+    }
+
+.blood-table {
+    margin: 0;
+}
+
+    .blood-table thead {
+        background: #071224;
+        color: white;
+    }
+
+    .blood-table th,
+    .blood-table td {
+        padding: 18px;
+        vertical-align: middle;
+    }
+
+.blood-badge {
+    background: #f34250;
+    color: white;
+    width: 48px;
+    height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: 800;
+    box-shadow: 0 10px 25px rgba(243, 66, 80, 0.35);
+}
+
+.btn-action {
+    padding: 10px 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 700;
+    margin-right: 6px;
+    display: inline-block;
+}
+
+    .btn-action.edit {
+        background: #fff3cd;
+        color: #8a5a00;
+    }
+
+    .btn-action.detail {
+        background: #dff3ff;
+        color: #075985;
+    }
+
+    .btn-action.delete {
+        background: #ffe0e0;
+        color: #b91c1c;
+    }
+
+.empty-data {
+    text-align: center;
+    padding: 55px;
+}
+
+    .empty-data h2 {
+        font-weight: 800;
+        color: #061733;
+    }
+
+    .empty-data p {
+        color: #60708a;
+    }
+
+.form-card form {
+    padding: 32px 36px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+}
+
+.form-group label {
+    font-weight: 800;
+    margin-bottom: 10px;
+    color: #1f2d44;
+}
+
+.form-control {
+    border-radius: 16px;
+    padding: 16px 18px;
+    border: 1px solid #dfe7f1;
+}
+
+.form-actions {
+    margin-top: 35px;
+    padding-top: 25px;
+    border-top: 1px solid #edf1f7;
+}
+
+.btn-save {
+    background: #f34250;
+    color: white;
+    border: none;
+    padding: 16px 28px;
+    border-radius: 14px;
+    font-weight: 800;
+}
+
+.btn-cancel {
+    background: #e9eef5;
+    color: #061733;
+    padding: 16px 28px;
+    border-radius: 14px;
+    font-weight: 800;
+    text-decoration: none;
+    margin-left: 10px;
+}
+
+@media (max-width: 768px) {
+    .blood-hero {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 25px;
+    }
+
+    .stats-grid,
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>

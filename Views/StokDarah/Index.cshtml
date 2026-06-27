@@ -1,0 +1,83 @@
+﻿@model IEnumerable<BloodCare.Models.StokDarah>
+
+@{
+    ViewData["Title"] = "Data Stok Darah";
+}
+
+<section class="blood-hero">
+    <div>
+        <span class="badge-soft">BloodCare Management</span>
+        <h1>Data Stok Darah</h1>
+        <p>Kelola ketersediaan stok darah berdasarkan golongan darah dan rhesus.</p>
+    </div>
+
+    <a asp-action="Create" class="btn-hero">+ Tambah Stok</a>
+</section>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <p>Total Data Stok</p>
+        <h2>@Model.Count()</h2>
+    </div>
+
+    <div class="stat-card">
+        <p>Total Kantong Darah</p>
+        <h2>@Model.Sum(x => x.JumlahKantong)</h2>
+    </div>
+
+    <div class="stat-card">
+        <p>Status Sistem</p>
+        <h2>Aktif</h2>
+    </div>
+</div>
+
+<section class="table-card">
+    <div class="table-header">
+        <h2>Daftar Stok Darah</h2>
+        <p>Informasi stok darah yang tersimpan di sistem.</p>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table blood-table">
+            <thead>
+                <tr>
+                    <th>Gol. Darah</th>
+                    <th>Rhesus</th>
+                    <th>Jumlah Stok</th>
+                    <th>Tanggal Update</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <span class="blood-badge">@item.GolonganDarah</span>
+                            </td>
+                            <td>@item.Rhesus</td>
+                            <td>@item.JumlahKantong Kantong</td>
+                            <td>@item.TanggalMasuk.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn-action edit">Edit</a>
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn-action detail">Detail</a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn-action delete">Hapus</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="empty-data">
+                            <h2>Belum ada data stok darah</h2>
+                            <p>Tambahkan data stok darah pertama untuk mulai menggunakan sistem BloodCare.</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>

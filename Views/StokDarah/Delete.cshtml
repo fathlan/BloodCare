@@ -1,0 +1,36 @@
+﻿@model BloodCare.Models.StokDarah
+
+@{
+    ViewData["Title"] = "Hapus Stok Darah";
+}
+
+<section class="delete-card">
+    <div class="delete-icon">!</div>
+
+    <h1>Hapus Data Stok Darah</h1>
+    <p>Apakah kamu yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.</p>
+
+    <div class="detail-item">
+        <span>Golongan Darah</span>
+        <strong>@Model.GolonganDarah @Model.Rhesus</strong>
+    </div>
+
+    <div class="detail-item">
+        <span>Jumlah Kantong</span>
+        <strong>@Model.JumlahKantong Kantong</strong>
+    </div>
+
+    <div class="detail-item">
+        <span>Tanggal Kadaluarsa</span>
+        <strong>@Model.TanggalKadaluarsa.ToString("dd/MM/yyyy")</strong>
+    </div>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="delete-actions">
+            <button type="submit" class="btn-delete-confirm">Ya, Hapus</button>
+            <a asp-action="Index" class="btn-cancel-delete">Batal</a>
+        </div>
+    </form>
+</section>
