@@ -1,0 +1,95 @@
+﻿@model BloodCare.Models.RiwayatDonor
+
+@{
+    ViewData["Title"] = "Input Riwayat Donor";
+}
+
+<div class="bloodcare-form-page">
+    <div class="form-hero">
+        <div>
+            <span class="page-label">BloodCare Activity</span>
+            <h1>Input Riwayat Baru</h1>
+            <p>Catat data pendonor yang hadir. Stok darah akan bertambah secara otomatis setelah disimpan.</p>
+        </div>
+
+        <a asp-action="Index" class="btn-back">Kembali</a>
+    </div>
+
+    <div class="form-card">
+        <div class="form-card-header">
+            <h2>Form Data Riwayat</h2>
+            <p>Pastikan pendonor sudah terdaftar sebelum menginput jumlah kantong darah.</p>
+        </div>
+
+        <form asp-action="Create" class="modern-form">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-grid">
+                <div class="form-group full">
+                    <label asp-for="PendonorId">Pilih Pendonor</label>
+                    <select asp-for="PendonorId" class="form-select modern-input" asp-items="ViewBag.PendonorList" required>
+                        <option value="">-- Pilih Nama Pendonor --</option>
+                    </select>
+                    <span asp-validation-for="PendonorId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="JumlahKantong">Jumlah Kantong Masuk</label>
+                    <input asp-for="JumlahKantong" type="number" min="1" class="form-control modern-input" placeholder="Contoh: 1" required />
+                    <span asp-validation-for="JumlahKantong" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="LokasiDonor">Lokasi Donor</label>
+                    <input asp-for="LokasiDonor" class="form-control modern-input" placeholder="Contoh: RSUD / PMI" required />
+                    <span asp-validation-for="LokasiDonor" class="text-danger"></span>
+                </div>
+
+                <div class="form-group full">
+                    <label asp-for="Keterangan">Keterangan Tambahan</label>
+                    <textarea asp-for="Keterangan" class="form-control modern-input textarea" placeholder="Catatan kondisi pendonor (opsional)"></textarea>
+                    <span asp-validation-for="Keterangan" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">Simpan & Update Stok</button>
+                <a asp-action="Index" class="btn-cancel">Batal</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* CSS Identik dari Kawan Lu */
+    body { background: linear-gradient(135deg, #fff5f5 0%, #ffffff 45%, #f8fafc 100%); font-family: 'Segoe UI', sans-serif; }
+    .bloodcare-form-page { padding: 28px 0 60px; }
+    .form-hero { display: flex; justify-content: space-between; align-items: center; gap: 20px; margin-bottom: 24px; padding: 30px; border-radius: 30px; background: radial-gradient(circle at top right, rgba(255,255,255,0.28), transparent 28%), linear-gradient(135deg, #991b1b, #ef4444); color: white; box-shadow: 0 22px 50px rgba(185, 28, 28, 0.25); }
+    .page-label { display: inline-block; margin-bottom: 10px; padding: 7px 14px; border-radius: 999px; background: rgba(255,255,255,0.18); font-size: 13px; letter-spacing: 0.5px; }
+    .form-hero h1 { margin: 0; font-size: 36px; font-weight: 850; }
+    .form-hero p { margin: 8px 0 0; opacity: 0.92; max-width: 620px; }
+    .btn-back { text-decoration: none; background: white; color: #b91c1c; padding: 13px 19px; border-radius: 16px; font-weight: 800; box-shadow: 0 12px 25px rgba(0,0,0,0.14); transition: 0.2s; white-space: nowrap; }
+    .btn-back:hover { transform: translateY(-2px); color: #991b1b; }
+    .form-card { border-radius: 30px; background: rgba(255,255,255,0.95); border: 1px solid #fee2e2; box-shadow: 0 20px 55px rgba(15, 23, 42, 0.09); overflow: hidden; }
+    .form-card-header { padding: 26px 30px; border-bottom: 1px solid #fee2e2; background: linear-gradient(180deg, #ffffff, #fff7f7); }
+    .form-card-header h2 { margin: 0; font-size: 25px; font-weight: 850; color: #111827; }
+    .form-card-header p { margin: 6px 0 0; color: #64748b; }
+    .modern-form { padding: 30px; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-group.full { grid-column: span 2; }
+    .form-group label { font-size: 14px; font-weight: 800; color: #334155; }
+    .modern-input { min-height: 48px; border-radius: 16px; border: 1px solid #e2e8f0; padding: 12px 15px; color: #111827; background: #ffffff; transition: 0.2s; }
+    .modern-input:focus { border-color: #ef4444; box-shadow: 0 0 0 0.18rem rgba(239, 68, 68, 0.16); }
+    .textarea { min-height: 120px; resize: vertical; }
+    .form-actions { display: flex; gap: 12px; margin-top: 30px; padding-top: 22px; border-top: 1px solid #f1f5f9; }
+    .btn-submit { border: none; padding: 13px 22px; border-radius: 16px; background: linear-gradient(135deg, #dc2626, #fb7185); color: white; font-weight: 850; box-shadow: 0 12px 24px rgba(220, 38, 38, 0.25); transition: 0.2s; }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 16px 30px rgba(220, 38, 38, 0.3); }
+    .btn-cancel { text-decoration: none; padding: 13px 22px; border-radius: 16px; background: #f1f5f9; color: #334155; font-weight: 800; transition: 0.2s; }
+    .btn-cancel:hover { background: #e2e8f0; color: #111827; }
+    @@media (max-width: 768px) { .form-hero { flex-direction: column; align-items: flex-start; } .form-grid { grid-template-columns: 1fr; } .form-group.full { grid-column: span 1; } .form-hero h1 { font-size: 28px; } }
+</style>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

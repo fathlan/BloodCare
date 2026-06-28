@@ -14,5 +14,10 @@ namespace BloodCare.Data
         public DbSet<StokDarah> StokDarahs { get; set; }
         public DbSet<PermintaanDarah> PermintaanDarahs { get; set; }
         public DbSet<JadwalDonor> JadwalDonors { get; set; }
+
+        //farel
+        
+        public DbSet<RiwayatDonor> RiwayatDonors { get; set; }
+        public DbSet<Laporan> Laporans { get; set; }
     }
 }
