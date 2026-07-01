@@ -2,9 +2,12 @@ using BloodCare.Data;
 using BloodCare.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BloodCare.Controllers
 {
+
+    [Authorize(Roles = "Admin")]
     public class PermintaanDarahController : Controller
     {
         private readonly ApplicationDbContext _context;

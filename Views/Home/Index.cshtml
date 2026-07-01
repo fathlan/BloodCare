@@ -1,8 +1,496 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    Layout = null;
 }
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BloodCare - Sistem Manajemen Donor Darah</title>
+    <style>
+        :root {
+            --red: #d21f2f;
+            --red-dark: #a01521;
+            --navy: #1e2a3a;
+            --gray-text: #6b7280;
+            --bg-soft: #f7f8fb;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            color: #1a1a1a;
+            background: #fff;
+        }
+        a { text-decoration: none; color: inherit; }
+        .container { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+        /* ===== NAVBAR ===== */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 24px;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            background: #fff;
+            z-index: 100;
+        }
+        .navbar .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 20px;
+        }
+        .navbar .logo span.drop { color: var(--red); font-size: 22px; }
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            font-weight: 500;
+            font-size: 15px;
+        }
+        .nav-links a { color: #333; padding-bottom: 4px; }
+        .nav-links a.active { color: var(--red); border-bottom: 2px solid var(--red); }
+        .nav-actions { display: flex; align-items: center; gap: 20px; }
+        .btn-login { color: var(--red); font-weight: 600; font-size: 15px; }
+        .btn-daftar {
+            background: var(--red);
+            color: #fff;
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 15px;
+        }
+        .btn-daftar:hover { background: var(--red-dark); }
+
+        /* ===== HERO ===== */
+        .hero {
+            background: linear-gradient(135deg, #fff 40%, #fbe4e6 100%);
+            padding: 70px 24px 60px;
+        }
+        .hero-grid {
+            max-width: 1180px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 60px;
+            align-items: center;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #fde3e6;
+            color: var(--red-dark);
+            font-size: 13px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+        .hero h1 {
+            font-size: 44px;
+            line-height: 1.2;
+            font-weight: 800;
+            margin: 0 0 20px;
+            color: #101828;
+        }
+        .hero h1 .red { color: var(--red); display: block; }
+        .hero p.desc {
+            color: var(--gray-text);
+            font-size: 16px;
+            line-height: 1.6;
+            max-width: 480px;
+            margin-bottom: 28px;
+        }
+        .hero-buttons { display: flex; gap: 14px; margin-bottom: 40px; }
+        .btn-primary {
+            background: var(--red);
+            color: #fff;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-primary:hover { background: var(--red-dark); }
+        .btn-outline {
+            background: #fff;
+            color: #101828;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            border: 1px solid #d0d5dd;
+            cursor: pointer;
+        }
+        .btn-outline:hover { border-color: var(--red); color: var(--red); }
+        .stats { display: flex; gap: 48px; }
+        .stat h3 { font-size: 26px; margin: 0; font-weight: 800; color: #101828; }
+        .stat p { margin: 2px 0 0; color: var(--gray-text); font-size: 14px; }
+
+        /* Stock card */
+        .stock-card {
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+            padding: 26px;
+        }
+        .stock-card-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .stock-card-head h4 { margin: 0; font-size: 16px; }
+        .live-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--red);
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .live-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--red);
+            display: inline-block;
+        }
+        .stock-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+        .stock-icon {
+            width: 38px; height: 38px;
+            border-radius: 10px;
+            background: #fde3e6;
+            color: var(--red-dark);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .stock-info { flex: 1; }
+        .stock-info-top {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .stock-info-top .mendesak { color: var(--red); }
+        .progress-bg {
+            background: #f1f1f4;
+            border-radius: 10px;
+            height: 6px;
+            overflow: hidden;
+        }
+        .progress-fill { background: var(--red); height: 100%; border-radius: 10px; }
+        .stock-card-footer {
+            text-align: center;
+            margin-top: 8px;
+            padding-top: 16px;
+            border-top: 1px solid #f0f0f0;
+        }
+        .stock-card-footer a { color: var(--red); font-weight: 600; font-size: 14px; }
+
+        /* ===== WHY SECTION ===== */
+        .why-section { padding: 80px 24px; background: #fff; }
+        .why-header { text-align: center; max-width: 620px; margin: 0 auto 50px; }
+        .why-header h2 { font-size: 32px; font-weight: 800; margin-bottom: 12px; color: #101828; }
+        .why-header p { color: var(--gray-text); font-size: 15px; line-height: 1.6; }
+
+        .why-grid {
+            max-width: 1180px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        .card-big {
+            background: linear-gradient(160deg, var(--red) 0%, #7a0f18 100%);
+            border-radius: 20px;
+            padding: 30px;
+            color: #fff;
+            min-height: 340px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+        .card-big h3 { font-size: 20px; margin: 0 0 8px; }
+        .card-big p { font-size: 14px; opacity: 0.85; margin: 0 0 12px; line-height: 1.5; }
+        .card-big a { font-weight: 600; font-size: 14px; }
+
+        .why-right { display: grid; grid-template-rows: 1fr 1fr; gap: 24px; }
+        .card-feature {
+            border-radius: 20px;
+            padding: 26px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 10px;
+        }
+        .card-feature.blue { background: #e9edfb; color: #101828; }
+        .card-feature .icon-box {
+            width: 42px; height: 42px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+            background: rgba(255,255,255,0.6);
+        }
+        .card-feature h4 { margin: 0; font-size: 16px; }
+        .card-feature p { margin: 0; font-size: 13px; color: var(--gray-text); line-height: 1.5; }
+
+        .small-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .card-small {
+            border-radius: 20px;
+            padding: 22px;
+        }
+        .card-small.light { background: #f4f5f7; }
+        .card-small.dark { background: var(--navy); color: #fff; }
+        .card-small .icon-box {
+            width: 36px; height: 36px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .card-small.light .icon-box { background: #fff; }
+        .card-small.dark .icon-box { background: rgba(255,255,255,0.12); }
+        .card-small h4 { margin: 0 0 6px; font-size: 15px; }
+        .card-small p { margin: 0; font-size: 13px; opacity: 0.8; line-height: 1.5; }
+
+        /* ===== CTA ===== */
+        .cta-wrap { background: #dbe6fb; padding: 60px 24px; }
+        .cta-box {
+            max-width: 1180px;
+            margin: 0 auto;
+            background: linear-gradient(120deg, var(--red) 0%, #7a0f18 100%);
+            border-radius: 20px;
+            padding: 40px 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+            color: #fff;
+            flex-wrap: wrap;
+        }
+        .cta-box h3 { margin: 0 0 8px; font-size: 22px; }
+        .cta-box p { margin: 0; font-size: 14px; opacity: 0.9; max-width: 480px; line-height: 1.5; }
+        .cta-buttons { display: flex; gap: 12px; flex-shrink: 0; }
+        .btn-white { background: #fff; color: var(--red-dark); padding: 12px 22px; border-radius: 8px; font-weight: 600; font-size: 14px; }
+        .btn-ghost-dark { background: rgba(0,0,0,0.15); color: #fff; padding: 12px 22px; border-radius: 8px; font-weight: 600; font-size: 14px; border: 1px solid rgba(255,255,255,0.3); }
+
+        /* ===== FOOTER ===== */
+        footer { padding: 60px 24px 24px; background: #fff; }
+        .footer-grid {
+            max-width: 1180px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1fr auto;
+            gap: 32px;
+            padding-bottom: 40px;
+        }
+        .footer-logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; color: #d9a3a8; margin-bottom: 12px; }
+        .footer-grid p { color: var(--gray-text); font-size: 13px; line-height: 1.6; max-width: 260px; }
+        .footer-col h5 { font-size: 13px; color: #101828; margin: 0 0 14px; font-weight: 700; }
+        .footer-col a { display: block; color: var(--gray-text); font-size: 13px; margin-bottom: 10px; }
+        .social-icons { display: flex; gap: 10px; }
+        .social-icons span {
+            width: 32px; height: 32px; border-radius: 8px;
+            background: #f1f1f4;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px;
+        }
+        .footer-bottom {
+            max-width: 1180px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+            font-size: 13px;
+            color: var(--gray-text);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .footer-bottom .links { display: flex; gap: 20px; }
+
+        @@media (max-width: 900px) {
+            .hero-grid { grid-template-columns: 1fr; }
+            .why-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="logo"><span class="drop">🩸</span> BloodCare</div>
+        <div class="nav-links">
+            <a href="#home" class="active">Home</a>
+            <a href="#tentang">Tentang Kami</a>
+            <a href="#stok">Stok Darah</a>
+            <a href="#kontak">Kontak</a>
+        </div>
+        <div class="nav-actions">
+            <a href="/Auth/Login" class="btn-login">Login</a>
+            <a href="/Auth/Register" class="btn-daftar">Daftar</a>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero" id="home">
+        <div class="hero-grid">
+            <div>
+                <span class="badge">🛡️ Sistem Manajemen Darah Terpercaya</span>
+                <h1>Setetes Darah Anda,<span class="red">Nyawa Bagi Mereka.</span></h1>
+                <p class="desc">BloodCare hadir untuk menjembatani antara pendonor dan mereka yang membutuhkan. Mari berbagi kehidupan melalui langkah sederhana namun bermakna.</p>
+                <div class="hero-buttons">
+                    <a href="/Auth/Register"><button class="btn-primary">Mulai Donor Sekarang &gt;</button></a>
+                    <a href="#stok"><button class="btn-outline">Cari Stok Darah</button></a>
+                </div>
+                <div class="stats">
+                    <div class="stat"><h3>12k+</h3><p>Pendonor Aktif</p></div>
+                    <div class="stat"><h3>45+</h3><p>Rumah Sakit</p></div>
+                    <div class="stat"><h3>8.4k</h3><p>Kantong Tersalurkan</p></div>
+                </div>
+            </div>
+
+            <div class="stock-card" id="stok">
+                <div class="stock-card-head">
+                    <h4>Ketersediaan Stok</h4>
+                    <span class="live-badge"><span class="live-dot"></span> Real-time</span>
+                </div>
+
+                <div class="stock-row">
+                    <div class="stock-icon">A</div>
+                    <div class="stock-info">
+                        <div class="stock-info-top"><span>Golongan A</span><span>75 Kantong</span></div>
+                        <div class="progress-bg"><div class="progress-fill" style="width:75%"></div></div>
+                    </div>
+                </div>
+                <div class="stock-row">
+                    <div class="stock-icon">B</div>
+                    <div class="stock-info">
+                        <div class="stock-info-top"><span>Golongan B</span><span>42 Kantong</span></div>
+                        <div class="progress-bg"><div class="progress-fill" style="width:42%"></div></div>
+                    </div>
+                </div>
+                <div class="stock-row">
+                    <div class="stock-icon">AB</div>
+                    <div class="stock-info">
+                        <div class="stock-info-top"><span>Golongan AB</span><span class="mendesak">Mendesak</span></div>
+                        <div class="progress-bg"><div class="progress-fill" style="width:15%"></div></div>
+                    </div>
+                </div>
+                <div class="stock-row">
+                    <div class="stock-icon">O</div>
+                    <div class="stock-info">
+                        <div class="stock-info-top"><span>Golongan O</span><span>120 Kantong</span></div>
+                        <div class="progress-bg"><div class="progress-fill" style="width:95%"></div></div>
+                    </div>
+                </div>
+
+                <div class="stock-card-footer">
+                    <a href="/Auth/Login">Lihat Detail Selengkapnya</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WHY SECTION -->
+    <section class="why-section" id="tentang">
+        <div class="why-header">
+            <h2>Mengapa Memilih BloodCare?</h2>
+            <p>Kami mengintegrasikan teknologi untuk memastikan setiap tetes darah tersalurkan dengan tepat dan cepat.</p>
+        </div>
+        <div class="why-grid">
+            <div class="card-big">
+                <h3>Sistem Terintegrasi</h3>
+                <p>Terhubung langsung dengan ratusan bank darah dan rumah sakit di seluruh Indonesia untuk pembaruan data secara real-time.</p>
+                <a href="#tentang">Pelajari Infrastruktur &gt;</a>
+            </div>
+
+            <div class="why-right">
+                <div class="card-feature blue">
+                    <div class="icon-box">🏆</div>
+                    <h4>Program Loyalitas</h4>
+                    <p>Dapatkan poin dari setiap donor yang Anda lakukan dan tukarkan dengan berbagai benefit menarik dari mitra kami.</p>
+                </div>
+                <div class="small-row">
+                    <div class="card-small light">
+                        <div class="icon-box">🕐</div>
+                        <h4>Reservasi Mudah</h4>
+                        <p>Pilih jadwal dan lokasi donor favorit Anda hanya dalam beberapa klik.</p>
+                    </div>
+                    <div class="card-small dark">
+                        <div class="icon-box">🛡️</div>
+                        <h4>Skrining Kesehatan</h4>
+                        <p>Riwayat kesehatan digital yang membantu Anda memantau kondisi tubuh setelah mendonor.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-wrap">
+        <div class="cta-box">
+            <div>
+                <h3>Sudah Siap Menjadi Pahlawan?</h3>
+                <p>Bergabunglah dengan ribuan pendonor lainnya dan mulailah memberikan dampak nyata bagi kehidupan orang lain hari ini.</p>
+            </div>
+            <div class="cta-buttons">
+                <a href="/Auth/Register"><button class="btn-white">Daftar Sekarang</button></a>
+                <a href="#kontak"><button class="btn-ghost-dark">Hubungi Kami</button></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer id="kontak">
+        <div class="footer-grid">
+            <div>
+                <div class="footer-logo">🩸 BloodCare</div>
+                <p>Platform manajemen donor darah modern yang fokus pada keamanan data, ketersediaan stok, dan kemudahan akses bagi seluruh masyarakat Indonesia.</p>
+            </div>
+            <div class="footer-col">
+                <h5>Layanan</h5>
+                <a href="#stok">Cari Stok Darah</a>
+                <a href="/Auth/Register">Daftar Pendonor</a>
+                <a href="#tentang">Rumah Sakit Rekanan</a>
+                <a href="#tentang">Program Mobile Unit</a>
+            </div>
+            <div class="footer-col">
+                <h5>Perusahaan</h5>
+                <a href="#tentang">Tentang Kami</a>
+                <a href="#tentang">Berita &amp; Edukasi</a>
+                <a href="#tentang">Karir</a>
+                <a href="#kontak">Kontak</a>
+            </div>
+            <div class="social-icons">
+                <span>📍</span>
+                <span>📷</span>
+                <span>▪️</span>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>&copy; 2026 BloodCare Management System. All rights reserved.</span>
+            <div class="links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">FAQ</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
