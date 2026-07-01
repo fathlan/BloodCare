@@ -1,0 +1,127 @@
+@model IEnumerable<BloodCare.Models.PermintaanDarah>
+
+@{
+    ViewData["Title"] = "Permintaan Darah";
+    int total      = Model.Count();
+    int diproses   = Model.Count(p => p.Status == "Diproses");
+    int ditolak    = Model.Count(p => p.Status == "Ditolak");
+}
+
+<!-- PAGE HERO -->
+<div class="bc-page-hero">
+    <div>
+        <h3>Permintaan Darah</h3>
+        <p>Kelola dan proses permintaan darah dari pasien atau rumah sakit secara real-time untuk menyelamatkan nyawa.</p>
+    </div>
+    <a asp-action="Create" class="bc-hero-btn">+ Input Permintaan Baru</a>
+</div>
+
+<!-- MINI STATS -->
+<div class="bc-mini-stats mb-4">
+    <div class="bc-mini-stat">
+        <div class="bc-mini-stat-icon blue"><i class="fa fa-file-alt"></i></div>
+        <div>
+            <div class="bc-mini-stat-val">@total</div>
+            <div class="bc-mini-stat-lbl">Total Permintaan</div>
+        </div>
+    </div>
+    <div class="bc-mini-stat">
+        <div class="bc-mini-stat-icon orange"><i class="fa fa-bolt"></i></div>
+        <div>
+            <div class="bc-mini-stat-val">@diproses</div>
+            <div class="bc-mini-stat-lbl">Diproses</div>
+        </div>
+    </div>
+    <div class="bc-mini-stat">
+        <div class="bc-mini-stat-icon red"><i class="fa fa-times-circle"></i></div>
+        <div>
+            <div class="bc-mini-stat-val">@ditolak</div>
+            <div class="bc-mini-stat-lbl">Ditolak</div>
+        </div>
+    </div>
+</div>
+
+<!-- TABLE -->
+<div class="bc-card">
+    <div class="bc-card-header">
+        <span class="bc-card-title">Daftar Permintaan Aktif</span>
+        <div style="display:flex;gap:8px">
+            <button class="bc-icon-btn" title="Filter"><i class="fa fa-filter"></i></button>
+            <button class="bc-icon-btn" title="Export"><i class="fa fa-download"></i></button>
+        </div>
+    </div>
+    <table class="bc-table">
+        <thead>
+            <tr>
+                <th>Nama Pasien</th>
+                <th>Rumah Sakit</th>
+                <th>Gol. Darah</th>
+                <th>Rhesus</th>
+                <th>Jumlah</th>
+                <th>Urgensi</th>
+                <th>Status</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr><td colspan="8" style="text-align:center;padding:32px;color:#95a5a6">Belum ada permintaan darah</td></tr>
+            }
+            @foreach (var item in Model)
+            {
+                // Tentukan urgensi berdasarkan jumlah kantong
+                string urgLabel  = item.JumlahKebutuhan >= 5 ? "DARURAT" : item.JumlahKebutuhan >= 3 ? "MENDESAK" : "NORMAL";
+                string urgClass  = item.JumlahKebutuhan >= 5 ? "bc-badge bc-urg-darurat" : item.JumlahKebutuhan >= 3 ? "bc-badge bc-urg-mendesak" : "bc-badge bc-urg-normal";
+
+                string statusClass  = item.Status == "Pending"  ? "bc-badge-warning" :
+                                      item.Status == "Diproses" ? "bc-badge-process" :
+                                      item.Status == "Selesai"  ? "bc-badge-success" : "bc-badge-secondary";
+
+                string initials = "";
+                if (!string.IsNullOrEmpty(item.NamaPasien))
+                {
+                    var parts = item.NamaPasien.Split(' ');
+                    initials = parts[0].Substring(0,1).ToUpper();
+                    if (parts.Length > 1) initials += parts[1].Substring(0,1).ToUpper();
+                }
+
+                <tr>
+                    <td>
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <span class="bc-tbl-avatar" style="background:#c0392b">@initials</span>
+                            <div>
+                                <div class="bc-tbl-name">@item.NamaPasien</div>
+                                <div class="bc-tbl-sub">@item.TanggalPermintaan.ToString("dd MMM yyyy")</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="bc-tbl-name" style="font-size:0.82rem">@item.RumahSakit</div>
+                    </td>
+                    <td>
+                        <span class="bc-blood">@item.GolonganDarah</span>
+                    </td>
+                    <td style="font-weight:700;color:#c0392b">@item.Rhesus</td>
+                    <td style="font-weight:600">@item.JumlahKebutuhan Kantong</td>
+                    <td><span class="bc-badge @urgClass">@urgLabel</span></td>
+                    <td><span class="bc-badge @statusClass">@item.Status</span></td>
+                    <td>
+                        <div style="display:flex;gap:5px;flex-wrap:wrap">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="bc-btn-detail">Detail</a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="bc-btn-edit">Edit</a>
+                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="bc-btn-del btn-confirm-delete" data-nama="@item.NamaPasien">Hapus</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="bc-pagination">
+        <span>Menampilkan @Model.Count() dari @total permintaan</span>
+        <div class="bc-page-btn active">1</div>
+    </div>
+</div>

@@ -1,55 +1,154 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="id">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - BloodCare</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/BloodCare.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/bloodcare.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">BloodCare</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Pendonors" asp-action="Index">Pendonor</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="StokDarah" asp-action="Index">Stok Darah</a>
-                        </li>
-                    </ul>
-                </div>
+<div class="bc-wrapper">
+
+    <!-- SIDEBAR -->
+    <aside class="bc-sidebar">
+        <div class="bc-sidebar-brand">
+            <div class="bc-brand-icon">🩸</div>
+            <div>
+                <div class="bc-brand-name">BloodCare</div>
+                <div class="bc-brand-sub">Management System</div>
             </div>
+        </div>
+
+        <nav class="bc-nav">
+            <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")"
+               asp-controller="Dashboard" asp-action="Index">
+                <i class="fa fa-th-large"></i> Dashboard
+            </a>
+            <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Pendonors" ? "active" : "")"
+               asp-controller="Pendonors" asp-action="Index">
+                <i class="fa fa-user"></i> Data Pendonor
+            </a>
+            <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "JadwalDonor" ? "active" : "")"
+               asp-controller="JadwalDonor" asp-action="Index">
+                <i class="fa fa-calendar"></i> Jadwal Donor
+            </a>
+            <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "StokDarah" ? "active" : "")"
+               asp-controller="StokDarah" asp-action="Index">
+                <i class="fa fa-tint"></i> Stok Darah
+            </a>
+            <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "PermintaanDarah" ? "active" : "")"
+               asp-controller="PermintaanDarah" asp-action="Index">
+                <i class="fa fa-hand-holding-medical"></i> Permintaan Darah
+            </a>
+            <a class="bc-nav-item" href="#">
+                <i class="fa fa-history"></i> Riwayat Donor
+            </a>
+            <a class="bc-nav-item" href="#">
+                <i class="fa fa-file-alt"></i> Laporan
+            </a>
+            <a class="bc-nav-item" href="#">
+                <i class="fa fa-bell"></i> Notifikasi
+            </a>
+            <a class="bc-nav-item" href="#">
+                <i class="fa fa-user-circle"></i> Profil
+            </a>
         </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+
+        <div class="bc-sidebar-footer">
+            <div class="bc-user-avatar">A</div>
+            <div>
+                <div class="bc-user-name">Admin Utama</div>
+                <div class="bc-user-role">Level: Superadmin</div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="bc-main">
+        <!-- TOP BAR -->
+        <header class="bc-topbar">
+            <div class="bc-topbar-title">
+                <h4 class="mb-0">BloodCare Admin</h4>
+                <small class="text-muted">Portal Manajemen</small>
+            </div>
+            <div class="bc-topbar-right">
+                <div class="bc-search-box">
+                    <i class="fa fa-search"></i>
+                    <input type="text" placeholder="Cari data..." />
+                </div>
+                <button class="bc-icon-btn"><i class="fa fa-question-circle"></i></button>
+                <button class="bc-icon-btn"><i class="fa fa-cog"></i></button>
+                <div class="bc-topbar-avatar">AU</div>
+            </div>
+        </header>
+
+        <!-- PAGE CONTENT -->
+        <main class="bc-content">
             @RenderBody()
         </main>
     </div>
+</div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - BloodCare - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+<!-- FAB Button -->
+<button class="bc-fab"><i class="fa fa-plus"></i></button>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+<script>
+    @if (TempData["SweetSuccess"] != null)
+    {
+        <text>
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '@TempData["SweetSuccess"]',
+            timer: 2500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            customClass: { popup: 'bc-swal' }
+        });
+        </text>
+    }
+    @if (TempData["SweetError"] != null)
+    {
+        <text>
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal!',
+            text: '@TempData["SweetError"]',
+            confirmButtonColor: '#c0392b'
+        });
+        </text>
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.btn-confirm-delete').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                var form = this.closest('form');
+                var nama = this.getAttribute('data-nama') || 'data ini';
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Hapus Data?',
+                    text: 'Data "' + nama + '" akan dihapus permanen!',
+                    showCancelButton: true,
+                    confirmButtonColor: '#c0392b',
+                    cancelButtonColor: '#7f8c8d',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal'
+                }).then(function (result) {
+                    if (result.isConfirmed) form.submit();
+                });
+            });
+        });
+    });
+</script>
+
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

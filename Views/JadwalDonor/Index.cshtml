@@ -1,0 +1,114 @@
+@model IEnumerable<BloodCare.Models.JadwalDonor>
+
+@{
+    ViewData["Title"] = "Jadwal Donor";
+    int totalJadwal = Model.Count();
+    int jadwalAktif = Model.Count(j => j.Tanggal >= DateTime.Today);
+    int totalPeserta = 0; // bisa dihubungkan ke tabel pendaftaran nanti
+}
+
+<!-- PAGE HERO -->
+<div class="bc-page-hero">
+    <div>
+        <h3>Jadwal Donor</h3>
+        <p>Buat dan kelola jadwal kegiatan donor darah.</p>
+    </div>
+    <a asp-action="Create" class="bc-hero-btn">+ Tambah Jadwal</a>
+</div>
+
+<!-- MINI STATS -->
+<div class="bc-mini-stats mb-4">
+    <div class="bc-mini-stat">
+        <div class="bc-mini-stat-icon red"><i class="fa fa-calendar"></i></div>
+        <div>
+            <div class="bc-mini-stat-val">@totalJadwal</div>
+            <div class="bc-mini-stat-lbl">TOTAL JADWAL</div>
+            <div class="bc-mini-stat-sub" style="color:#27ae60">↑+10% bulan ini</div>
+        </div>
+    </div>
+    <div class="bc-mini-stat">
+        <div class="bc-mini-stat-icon blue"><i class="fa fa-calendar-check"></i></div>
+        <div>
+            <div class="bc-mini-stat-val">@jadwalAktif</div>
+            <div class="bc-mini-stat-lbl">JADWAL AKTIF</div>
+            <div class="bc-mini-stat-sub" style="color:#7f8c8d">Jadwal aktif pekan ini</div>
+        </div>
+    </div>
+    <div class="bc-mini-stat">
+        <div class="bc-mini-stat-icon orange"><i class="fa fa-users"></i></div>
+        <div>
+            <div class="bc-mini-stat-val">@Model.Sum(j => j.Kuota)</div>
+            <div class="bc-mini-stat-lbl">TOTAL PESERTA</div>
+            <div class="bc-mini-stat-sub" style="color:#7f8c8d">↑ 45 menunggu konfirmasi</div>
+        </div>
+    </div>
+</div>
+
+<!-- TABLE -->
+<div class="bc-card">
+    <table class="bc-table">
+        <thead>
+            <tr>
+                <th>Nama Kegiatan</th>
+                <th>Tanggal</th>
+                <th>Lokasi</th>
+                <th>Waktu Mulai</th>
+                <th>Kuota</th>
+                <th>Peserta Terdaftar</th>
+                <th>Status</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr><td colspan="8" style="text-align:center;padding:32px;color:#95a5a6">Belum ada jadwal donor</td></tr>
+            }
+            @foreach (var item in Model)
+            {
+                bool isAktif = item.Tanggal >= DateTime.Today;
+                bool isSudah = item.Tanggal < DateTime.Today;
+                string statusBadge = isAktif ? "bc-badge-success" : "bc-badge-secondary";
+                string statusTeks  = isAktif ? "Aktif" : "Selesai";
+                // Progress bar simulasi (tanpa tabel pendaftaran, tampilkan 0/kuota)
+                int terdaftar = 0;
+                int pct = item.Kuota > 0 ? (int)((double)terdaftar / item.Kuota * 100) : 0;
+                string fillClass = pct >= 90 ? "warn" : pct >= 50 ? "" : "ok";
+
+                <tr>
+                    <td>
+                        <div class="bc-tbl-name">Donor Darah Rutin</div>
+                        <div class="bc-tbl-sub">@item.Keterangan</div>
+                    </td>
+                    <td style="font-size:0.82rem">@item.Tanggal.ToString("dd MMM yyyy")</td>
+                    <td>
+                        <div class="bc-tbl-name">@item.Lokasi</div>
+                    </td>
+                    <td style="font-size:0.82rem;color:#7f8c8d">08:00 WIB</td>
+                    <td style="font-weight:600">@item.Kuota</td>
+                    <td>
+                        <div style="font-size:0.8rem;margin-bottom:4px;color:#34495e">@terdaftar/@item.Kuota</div>
+                        <div class="bc-progress">
+                            <div class="bc-progress-fill @fillClass" style="width:@pct%"></div>
+                        </div>
+                    </td>
+                    <td><span class="bc-badge @statusBadge">@statusTeks</span></td>
+                    <td>
+                        <div style="display:flex;gap:5px;flex-wrap:wrap">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="bc-btn-detail">Detail</a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="bc-btn-edit">Edit</a>
+                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="bc-btn-del btn-confirm-delete" data-nama="@item.Lokasi">Hapus</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="bc-pagination">
+        <span>Menampilkan @Model.Count() dari @Model.Count() kegiatan</span>
+        <div class="bc-page-btn active">1</div>
+    </div>
+</div>
