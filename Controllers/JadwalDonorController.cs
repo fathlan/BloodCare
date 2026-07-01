@@ -2,9 +2,13 @@ using BloodCare.Data;
 using BloodCare.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BloodCare.Controllers
 {
+    // TIDAK ada [Authorize] di level class
+    // supaya Index/Details bisa diakses User Umum tanpa login,
+    // sesuai use case "Melihat jadwal donor darah"
     public class JadwalDonorController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -14,7 +18,7 @@ namespace BloodCare.Controllers
             _context = context;
         }
 
-        // GET: JadwalDonor
+        // GET: JadwalDonor -> PUBLIK (User Umum, Pendonor, Petugas, Admin semua bisa lihat)
         public async Task<IActionResult> Index()
         {
             var data = await _context.JadwalDonors
@@ -23,7 +27,7 @@ namespace BloodCare.Controllers
             return View(data);
         }
 
-        // GET: JadwalDonor/Details/5
+        // GET: JadwalDonor/Details/5 -> PUBLIK
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -36,13 +40,15 @@ namespace BloodCare.Controllers
             return View(jadwal);
         }
 
-        // GET: JadwalDonor/Create
+        // GET: JadwalDonor/Create -> HANYA ADMIN (sesuai use case "Mengelola jadwal donor")
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
         }
 
         // POST: JadwalDonor/Create
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Lokasi,Tanggal,Kuota,Keterangan")] JadwalDonor jadwal)
@@ -57,7 +63,8 @@ namespace BloodCare.Controllers
             return View(jadwal);
         }
 
-        // GET: JadwalDonor/Edit/5
+        // GET: JadwalDonor/Edit/5 -> HANYA ADMIN
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -69,6 +76,7 @@ namespace BloodCare.Controllers
         }
 
         // POST: JadwalDonor/Edit/5
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Lokasi,Tanggal,Kuota,Keterangan")] JadwalDonor jadwal)
@@ -93,7 +101,8 @@ namespace BloodCare.Controllers
             return View(jadwal);
         }
 
-        // GET: JadwalDonor/Delete/5
+        // GET: JadwalDonor/Delete/5 -> HANYA ADMIN
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -107,6 +116,7 @@ namespace BloodCare.Controllers
         }
 
         // POST: JadwalDonor/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

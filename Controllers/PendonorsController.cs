@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BloodCare.Data;
 using BloodCare.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BloodCare.Controllers
 {

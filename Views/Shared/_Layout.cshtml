@@ -10,145 +10,197 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 <body>
-<div class="bc-wrapper">
+    <div class="bc-wrapper">
 
-    <!-- SIDEBAR -->
-    <aside class="bc-sidebar">
-        <div class="bc-sidebar-brand">
-            <div class="bc-brand-icon">🩸</div>
-            <div>
-                <div class="bc-brand-name">BloodCare</div>
-                <div class="bc-brand-sub">Management System</div>
-            </div>
-        </div>
-
-        <nav class="bc-nav">
-            <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")"
-               asp-controller="Dashboard" asp-action="Index">
-                <i class="fa fa-th-large"></i> Dashboard
-            </a>
-            <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Pendonors" ? "active" : "")"
-               asp-controller="Pendonors" asp-action="Index">
-                <i class="fa fa-user"></i> Data Pendonor
-            </a>
-            <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "JadwalDonor" ? "active" : "")"
-               asp-controller="JadwalDonor" asp-action="Index">
-                <i class="fa fa-calendar"></i> Jadwal Donor
-            </a>
-            <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "StokDarah" ? "active" : "")"
-               asp-controller="StokDarah" asp-action="Index">
-                <i class="fa fa-tint"></i> Stok Darah
-            </a>
-            <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "PermintaanDarah" ? "active" : "")"
-               asp-controller="PermintaanDarah" asp-action="Index">
-                <i class="fa fa-hand-holding-medical"></i> Permintaan Darah
-            </a>
-            <a class="bc-nav-item" href="#">
-                <i class="fa fa-history"></i> Riwayat Donor
-            </a>
-            <a class="bc-nav-item" href="#">
-                <i class="fa fa-file-alt"></i> Laporan
-            </a>
-            <a class="bc-nav-item" href="#">
-                <i class="fa fa-bell"></i> Notifikasi
-            </a>
-            <a class="bc-nav-item" href="#">
-                <i class="fa fa-user-circle"></i> Profil
-            </a>
-        </nav>
-
-        <div class="bc-sidebar-footer">
-            <div class="bc-user-avatar">A</div>
-            <div>
-                <div class="bc-user-name">Admin Utama</div>
-                <div class="bc-user-role">Level: Superadmin</div>
-            </div>
-        </div>
-    </aside>
-
-    <!-- MAIN CONTENT -->
-    <div class="bc-main">
-        <!-- TOP BAR -->
-        <header class="bc-topbar">
-            <div class="bc-topbar-title">
-                <h4 class="mb-0">BloodCare Admin</h4>
-                <small class="text-muted">Portal Manajemen</small>
-            </div>
-            <div class="bc-topbar-right">
-                <div class="bc-search-box">
-                    <i class="fa fa-search"></i>
-                    <input type="text" placeholder="Cari data..." />
+        <!-- SIDEBAR -->
+        <aside class="bc-sidebar">
+            <div class="bc-sidebar-brand">
+                <div class="bc-brand-icon">🩸</div>
+                <div>
+                    <div class="bc-brand-name">BloodCare</div>
+                    <div class="bc-brand-sub">Management System</div>
                 </div>
-                <button class="bc-icon-btn"><i class="fa fa-question-circle"></i></button>
-                <button class="bc-icon-btn"><i class="fa fa-cog"></i></button>
-                <div class="bc-topbar-avatar">AU</div>
             </div>
-        </header>
 
-        <!-- PAGE CONTENT -->
-        <main class="bc-content">
-            @RenderBody()
-        </main>
+            <nav class="bc-nav">
+                @* Dashboard - semua role yang login boleh lihat *@
+                <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")"
+                   asp-controller="Dashboard" asp-action="Index">
+                    <i class="fa fa-th-large"></i> Dashboard
+                </a>
+
+                @* Data Pendonor - HANYA ADMIN *@
+                @if (User.IsInRole("Admin"))
+                {
+                    <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Pendonors" ? "active" : "")"
+                       asp-controller="Pendonors" asp-action="Index">
+                        <i class="fa fa-user"></i> Data Pendonor
+                    </a>
+                }
+
+                @* Jadwal Donor - semua role login boleh lihat (Admin bisa kelola juga) *@
+                <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "JadwalDonor" ? "active" : "")"
+                   asp-controller="JadwalDonor" asp-action="Index">
+                    <i class="fa fa-calendar"></i> Jadwal Donor
+                </a>
+
+                @* Stok Darah - semua role login boleh lihat (Admin/Petugas bisa update) *@
+                <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "StokDarah" ? "active" : "")"
+                   asp-controller="StokDarah" asp-action="Index">
+                    <i class="fa fa-tint"></i> Stok Darah
+                </a>
+
+                @* Permintaan Darah - HANYA ADMIN *@
+                @if (User.IsInRole("Admin"))
+                {
+                    <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "PermintaanDarah" ? "active" : "")"
+                       asp-controller="PermintaanDarah" asp-action="Index">
+                        <i class="fa fa-hand-holding-medical"></i> Permintaan Darah
+                    </a>
+                }
+
+                @* Riwayat Donor - Admin, Petugas, Pendonor (masing-masing beda scope datanya nanti diatur di controller) *@
+                <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "RiwayatDonor" ? "active" : "")"
+                   asp-controller="RiwayatDonor" asp-action="Index">
+                    <i class="fa fa-history"></i> Riwayat Donor
+                </a>
+
+                @* Laporan - HANYA ADMIN *@
+                @if (User.IsInRole("Admin"))
+                {
+                    <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Laporan" ? "active" : "")"
+                       asp-controller="Laporan" asp-action="Index">
+                        <i class="fa fa-file-alt"></i> Laporan
+                    </a>
+                }
+
+                @* Notifikasi & Profil - semua role login *@
+                <a class="bc-nav-item" href="#">
+                    <i class="fa fa-bell"></i> Notifikasi
+                </a>
+                <a class="bc-nav-item" href="#">
+                    <i class="fa fa-user-circle"></i> Profil
+                </a>
+            </nav>
+
+            <div class="bc-sidebar-footer">
+                <div class="bc-user-avatar">
+                    @(User.Identity?.Name?.Substring(0, 1).ToUpper() ?? "?")
+                </div>
+                <div>
+                    <div class="bc-user-name">@(User.Identity?.Name ?? "Guest")</div>
+                    <div class="bc-user-role">
+                        Level:
+                        @(User.IsInRole("Admin") ? "Admin"
+                            : User.IsInRole("Petugas") ? "Petugas"
+                            : User.IsInRole("Pendonor") ? "Pendonor"
+                            : "-")
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <div class="bc-main">
+            <!-- TOP BAR -->
+            <header class="bc-topbar">
+                <div class="bc-topbar-title">
+                    <h4 class="mb-0">BloodCare Admin</h4>
+                    <small class="text-muted">Portal Manajemen</small>
+                </div>
+                <div class="bc-topbar-right">
+                    <div class="bc-search-box">
+                        <i class="fa fa-search"></i>
+                        <input type="text" placeholder="Cari data..." />
+                    </div>
+
+                    <div class="topbar-user">
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            <span>
+                                Halo, @User.Identity.Name
+                                (@(User.IsInRole("Admin") ? "Admin" : User.IsInRole("Petugas") ? "Petugas" : "Pendonor"))
+                            </span>
+                            <form asp-controller="Auth" asp-action="Logout" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-outline-light">Logout</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a href="/Auth/Login" class="btn btn-sm btn-light">Login</a>
+                        }
+                    </div>
+
+                    <button class="bc-icon-btn"><i class="fa fa-question-circle"></i></button>
+                    <button class="bc-icon-btn"><i class="fa fa-cog"></i></button>
+                    <div class="bc-topbar-avatar">
+                        @(User.Identity?.Name?.Substring(0, 1).ToUpper() ?? "?")
+                    </div>
+                </div>
+            </header>
+
+            <!-- PAGE CONTENT -->
+            <main class="bc-content">
+                @RenderBody()
+            </main>
+        </div>
     </div>
-</div>
 
-<!-- FAB Button -->
-<button class="bc-fab"><i class="fa fa-plus"></i></button>
+    <!-- FAB Button -->
+    <button class="bc-fab"><i class="fa fa-plus"></i></button>
 
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
-<script>
-    @if (TempData["SweetSuccess"] != null)
-    {
-        <text>
+    <script>
+        var sweetSuccess = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["SweetSuccess"]?.ToString() ?? ""));
+        var sweetError = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["SweetError"]?.ToString() ?? ""));
+
+        if (sweetSuccess) {
         Swal.fire({
-            icon: 'success',
-            title: 'Berhasil!',
-            text: '@TempData["SweetSuccess"]',
-            timer: 2500,
-            timerProgressBar: true,
-            showConfirmButton: false,
-            customClass: { popup: 'bc-swal' }
+        icon: 'success',
+        title: 'Berhasil!',
+        text: sweetSuccess,
+        timer: 2500,
+        timerProgressBar: true,
+        showConfirmButton: false,
+        customClass: { popup: 'bc-swal' }
         });
-        </text>
-    }
-    @if (TempData["SweetError"] != null)
-    {
-        <text>
-        Swal.fire({
-            icon: 'error',
-            title: 'Gagal!',
-            text: '@TempData["SweetError"]',
-            confirmButtonColor: '#c0392b'
-        });
-        </text>
-    }
+        }
 
-    document.addEventListener('DOMContentLoaded', function () {
+        if (sweetError) {
+        Swal.fire({
+        icon: 'error',
+        title: 'Gagal!',
+        text: sweetError,
+        confirmButtonColor: '#c0392b'
+        });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.btn-confirm-delete').forEach(function (btn) {
-            btn.addEventListener('click', function (e) {
-                e.preventDefault();
-                var form = this.closest('form');
-                var nama = this.getAttribute('data-nama') || 'data ini';
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Hapus Data?',
-                    text: 'Data "' + nama + '" akan dihapus permanen!',
-                    showCancelButton: true,
-                    confirmButtonColor: '#c0392b',
-                    cancelButtonColor: '#7f8c8d',
-                    confirmButtonText: 'Ya, Hapus!',
-                    cancelButtonText: 'Batal'
-                }).then(function (result) {
-                    if (result.isConfirmed) form.submit();
-                });
-            });
+        btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        var form = this.closest('form');
+        var nama = this.getAttribute('data-nama') || 'data ini';
+        Swal.fire({
+        icon: 'warning',
+        title: 'Hapus Data?',
+        text: 'Data "' + nama + '" akan dihapus permanen!',
+        showCancelButton: true,
+        confirmButtonColor: '#c0392b',
+        cancelButtonColor: '#7f8c8d',
+        confirmButtonText: 'Ya, Hapus!',
+        cancelButtonText: 'Batal'
+        }).then(function (result) {
+        if (result.isConfirmed) form.submit();
         });
-    });
-</script>
+        });
+        });
+        });
+    </script>
 
-@await RenderSectionAsync("Scripts", required: false)
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
