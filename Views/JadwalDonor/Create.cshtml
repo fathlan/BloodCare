@@ -1,0 +1,45 @@
+@model BloodCare.Models.JadwalDonor
+
+@{
+    ViewData["Title"] = "Tambah Jadwal Donor";
+}
+
+<div style="max-width:640px;margin:0 auto">
+    <div class="bc-form-card">
+        <div class="bc-form-header">
+            <h5>📅 Tambah Jadwal Donor</h5>
+            <div style="font-size:0.82rem;opacity:0.85;margin-top:3px">Isi data jadwal kegiatan donor darah</div>
+        </div>
+        <div class="bc-form-body">
+            <form asp-action="Create">
+                <div class="mb-3">
+                    <label asp-for="Lokasi" class="form-label">Lokasi</label>
+                    <input asp-for="Lokasi" class="form-control" placeholder="Contoh: PMI Kota Pekanbaru" />
+                    <span asp-validation-for="Lokasi" class="text-danger small"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Tanggal" class="form-label">Tanggal</label>
+                    <input asp-for="Tanggal" class="form-control" type="date" />
+                    <span asp-validation-for="Tanggal" class="text-danger small"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Kuota" class="form-label">Kuota Peserta</label>
+                    <input asp-for="Kuota" class="form-control" type="number" min="1" placeholder="Jumlah peserta" />
+                    <span asp-validation-for="Kuota" class="text-danger small"></span>
+                </div>
+                <div class="mb-4">
+                    <label asp-for="Keterangan" class="form-label">Keterangan <span style="color:#95a5a6;font-weight:400">(opsional)</span></label>
+                    <textarea asp-for="Keterangan" class="form-control" rows="3" placeholder="Keterangan tambahan..."></textarea>
+                </div>
+                <div style="display:flex;gap:10px">
+                    <button type="submit" class="bc-btn-primary">💾 Simpan Jadwal</button>
+                    <a asp-action="Index" class="bc-btn-secondary">Batal</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,174 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<!-- HERO BANNER -->
+<div class="bc-hero">
+    <div>
+        <h2>Selamat Datang, Admin</h2>
+        <p>Kelola sistem BloodCare dengan mudah dan efisien. Pantau stok darah dan permintaan secara real-time untuk menyelamatkan lebih banyak nyawa.</p>
+    </div>
+</div>
+
+<!-- STAT CARDS -->
+<div class="bc-stat-grid">
+    <div class="bc-stat-card">
+        <div class="bc-stat-icon red"><i class="fa fa-user"></i></div>
+        <div class="bc-stat-label">Total Pendonor</div>
+        <div class="bc-stat-value">@ViewBag.TotalPendonor</div>
+        <div class="bc-stat-sub up"><i class="fa fa-arrow-up"></i> Data terdaftar</div>
+    </div>
+    <div class="bc-stat-card">
+        <div class="bc-stat-icon orange"><i class="fa fa-tint"></i></div>
+        <div class="bc-stat-label">Stok Darah Tersedia</div>
+        <div class="bc-stat-value">
+            @{
+                var stokList = ViewBag.StokDarah as IEnumerable<dynamic>;
+                int totalStok = 0;
+                if (stokList != null) foreach (var s in stokList) totalStok += (int)s.TotalKantong;
+            }
+            @totalStok <small style="font-size:1rem;font-weight:500">Kantong</small>
+        </div>
+        <div class="bc-stat-sub warn"><i class="fa fa-exclamation-triangle"></i> Perlu penambahan</div>
+    </div>
+    <div class="bc-stat-card">
+        <div class="bc-stat-icon blue"><i class="fa fa-file-alt"></i></div>
+        <div class="bc-stat-label">Jumlah Permintaan</div>
+        <div class="bc-stat-value">@ViewBag.TotalPermintaanPending</div>
+        <div class="bc-stat-sub info"><i class="fa fa-clock"></i> Menunggu verifikasi</div>
+    </div>
+    <div class="bc-stat-card">
+        <div class="bc-stat-icon purple"><i class="fa fa-bell"></i></div>
+        <div class="bc-stat-label">Total Jadwal</div>
+        <div class="bc-stat-value">@ViewBag.TotalJadwal</div>
+        <div class="bc-stat-sub alert"><i class="fa fa-calendar"></i> Jadwal aktif</div>
+    </div>
+</div>
+
+<!-- BOTTOM ROW -->
+<div class="row g-3">
+    <!-- Aktivitas Terbaru -->
+    <div class="col-lg-7">
+        <div class="bc-card">
+            <div class="bc-card-header">
+                <span class="bc-card-title">Aktivitas Terbaru</span>
+                <a href="/PermintaanDarah" class="bc-card-link">Lihat Semua →</a>
+            </div>
+            <table class="bc-table">
+                <thead>
+                    <tr>
+                        <th>Nama</th>
+                        <th>Aktivitas</th>
+                        <th>Tanggal</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        var permintaanList = ViewBag.PermintaanTerbaru as IEnumerable<BloodCare.Models.PermintaanDarah>;
+                        var avatarColors = new[] { "#c0392b","#2471a3","#1e8449","#d35400","#8e44ad" };
+                        int ai = 0;
+                    }
+                    @if (permintaanList != null && permintaanList.Any())
+                    {
+                        foreach (var p in permintaanList)
+                        {
+                            string initials = p.NamaPasien?.Length >= 2
+                                ? p.NamaPasien.Substring(0,1).ToUpper() + (p.NamaPasien.Contains(" ") ? p.NamaPasien.Split(' ')[1].Substring(0,1).ToUpper() : p.NamaPasien.Substring(1,1).ToUpper())
+                                : (p.NamaPasien ?? "?").ToUpper();
+                            string badgeClass = p.Status == "Pending" ? "bc-badge-warning" :
+                                                p.Status == "Diproses" ? "bc-badge-process" :
+                                                p.Status == "Selesai" ? "bc-badge-success" : "bc-badge-secondary";
+                            <tr>
+                                <td>
+                                    <div style="display:flex;align-items:center;gap:10px">
+                                        <span class="bc-tbl-avatar" style="background:@avatarColors[ai % avatarColors.Length]">@initials</span>
+                                        <div>
+                                            <div class="bc-tbl-name">@p.NamaPasien</div>
+                                            <div class="bc-tbl-sub">@p.RumahSakit</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>Permintaan Darah (Gol @p.GolonganDarah@p.Rhesus)</td>
+                                <td style="font-size:0.8rem;color:#7f8c8d">@p.TanggalPermintaan.ToString("dd MMM yyyy")</td>
+                                <td><span class="bc-badge @badgeClass">@p.Status</span></td>
+                            </tr>
+                            ai++;
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="4" style="text-align:center;padding:28px;color:#95a5a6">Belum ada data aktivitas</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Distribusi Golongan Darah -->
+    <div class="col-lg-5">
+        <div class="bc-card h-100">
+            <div class="bc-card-header">
+                <span class="bc-card-title">Distribusi Golongan Darah</span>
+            </div>
+            <div style="padding:20px 22px">
+                @{
+                    var golongans = new[] {
+                        new { Gol = "Golongan A",  Key = "A",  Pct = 35 },
+                        new { Gol = "Golongan B",  Key = "B",  Pct = 25 },
+                        new { Gol = "Golongan O",  Key = "O",  Pct = 30 },
+                        new { Gol = "Golongan AB", Key = "AB", Pct = 10 },
+                    };
+                    var stokData = ViewBag.StokDarah as IEnumerable<dynamic>;
+                }
+                @foreach (var g in golongans)
+                {
+                    int kantong = 0;
+                    if (stokData != null)
+                        foreach (var s in stokData)
+                            if (s.GolonganDarah == g.Key) kantong = (int)s.TotalKantong;
+                    int pct = totalStok > 0 ? (int)((double)kantong / totalStok * 100) : g.Pct;
+                    <div class="bc-dist-item">
+                        <div class="bc-dist-label">
+                            <strong>@g.Gol</strong>
+                            <span>@pct% (@kantong Kantong)</span>
+                        </div>
+                        <div class="bc-dist-bar">
+                            <div class="bc-dist-fill" style="width:@pct%"></div>
+                        </div>
+                    </div>
+                }
+
+                <a href="/StokDarah" style="display:block;text-align:center;margin-top:18px;background:#fdecea;color:#c0392b;border:1.5px solid #e8b4b0;border-radius:8px;padding:9px;font-weight:600;font-size:0.85rem;text-decoration:none">
+                    Cetak Laporan Stok
+                </a>
+            </div>
+
+            <!-- Jadwal Terdekat -->
+            <div class="bc-card-header" style="border-top:1px solid #f0f2f5">
+                <span class="bc-card-title">Jadwal Donor Terdekat</span>
+                <a href="/JadwalDonor" class="bc-card-link">Lihat Semua →</a>
+            </div>
+            @{
+                var jadwalList = ViewBag.JadwalTerdekat as IEnumerable<BloodCare.Models.JadwalDonor>;
+            }
+            @if (jadwalList != null && jadwalList.Any())
+            {
+                foreach (var j in jadwalList)
+                {
+                    <div style="padding:10px 22px;border-bottom:1px solid #f5f6fa;display:flex;align-items:center;justify-content:space-between">
+                        <div>
+                            <div style="font-weight:600;font-size:0.85rem">@j.Lokasi</div>
+                            <div style="font-size:0.75rem;color:#95a5a6">@j.Tanggal.ToString("dd MMM yyyy") • Kuota @j.Kuota orang</div>
+                        </div>
+                        <span class="bc-badge bc-badge-success">Aktif</span>
+                    </div>
+                }
+            }
+            else
+            {
+                <div style="padding:20px 22px;color:#95a5a6;font-size:0.85rem;text-align:center">Belum ada jadwal</div>
+            }
+        </div>
+    </div>
+</div>
