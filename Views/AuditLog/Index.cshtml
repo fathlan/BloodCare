@@ -1,0 +1,222 @@
+@model IEnumerable<BloodCare.Models.AuditLog>
+
+@{
+    ViewData["Title"] = "Audit Trail";
+    var filter = ViewBag.Filter as BloodCare.ViewModels.AuditLogFilterViewModel ?? new BloodCare.ViewModels.AuditLogFilterViewModel();
+    var actions = ViewBag.Actions as List<string> ?? new List<string>();
+    var tables  = ViewBag.Tables  as List<string> ?? new List<string>();
+}
+
+<!-- PAGE HERO -->
+<div class="bc-page-hero">
+    <div>
+        <h3>Audit Trail</h3>
+        <p>Rekam jejak semua aktivitas pengguna dalam sistem BloodCare.</p>
+    </div>
+    <form asp-action="ClearOld" method="post" style="display:inline">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="bc-hero-btn btn-confirm-clear"
+                style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.4)">
+             Hapus Log > 30 Hari
+        </button>
+    </form>
+</div>
+
+<!-- MINI STATS -->
+<div class="bc-mini-stats mb-4">
+    <div class="bc-mini-stat">
+        <div class="bc-mini-stat-icon blue"><i class="fa fa-list-alt"></i></div>
+        <div>
+            <div class="bc-mini-stat-val">@ViewBag.TotalLog</div>
+            <div class="bc-mini-stat-lbl">Total Log</div>
+        </div>
+    </div>
+    <div class="bc-mini-stat">
+        <div class="bc-mini-stat-icon green"><i class="fa fa-calendar-day"></i></div>
+        <div>
+            <div class="bc-mini-stat-val">@ViewBag.TotalHariIni</div>
+            <div class="bc-mini-stat-lbl">Log Hari Ini</div>
+        </div>
+    </div>
+    <div class="bc-mini-stat">
+        <div class="bc-mini-stat-icon orange"><i class="fa fa-sign-in-alt"></i></div>
+        <div>
+            <div class="bc-mini-stat-val">@ViewBag.TotalLogin</div>
+            <div class="bc-mini-stat-lbl">Total Login</div>
+        </div>
+    </div>
+    <div class="bc-mini-stat">
+        <div class="bc-mini-stat-icon red"><i class="fa fa-trash"></i></div>
+        <div>
+            <div class="bc-mini-stat-val">@ViewBag.TotalDelete</div>
+            <div class="bc-mini-stat-lbl">Total Hapus</div>
+        </div>
+    </div>
+</div>
+
+<!-- FILTER -->
+<div class="bc-card mb-3">
+    <div class="bc-card-header">
+        <span class="bc-card-title">Filter Log</span>
+        <a asp-action="Index" class="bc-card-link">Reset Filter</a>
+    </div>
+    <div style="padding:18px 22px">
+        <form asp-action="Index" method="get">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold" style="font-size:0.82rem">Cari User</label>
+                    <input type="text" name="SearchUser" class="form-control"
+                           placeholder="Email / username..."
+                           value="@filter.SearchUser" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold" style="font-size:0.82rem">Aksi</label>
+                    <select name="FilterAction" class="form-select">
+                        <option value="">Semua Aksi</option>
+                        @foreach (var a in actions)
+                        {
+                            <option value="@a" selected="@(filter.FilterAction == a)">@a</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold" style="font-size:0.82rem">Tabel</label>
+                    <select name="FilterTable" class="form-select">
+                        <option value="">Semua Tabel</option>
+                        @foreach (var t in tables)
+                        {
+                            <option value="@t" selected="@(filter.FilterTable == t)">@t</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold" style="font-size:0.82rem">Dari Tanggal</label>
+                    <input type="date" name="TanggalDari" class="form-control"
+                           value="@filter.TanggalDari?.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold" style="font-size:0.82rem">Sampai Tanggal</label>
+                    <input type="date" name="TanggalSampai" class="form-control"
+                           value="@filter.TanggalSampai?.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="bc-btn-primary w-100">Cari</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- TABLE -->
+<div class="bc-card">
+    <div class="bc-card-header">
+        <span class="bc-card-title">Daftar Log Aktivitas</span>
+        <span style="font-size:0.8rem;color:#95a5a6">Menampilkan @Model.Count() log terbaru</span>
+    </div>
+    <table class="bc-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Waktu</th>
+                <th>User</th>
+                <th>Aksi</th>
+                <th>Tabel</th>
+                <th>Record ID</th>
+                <th>Detail</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="7" style="text-align:center;padding:32px;color:#95a5a6">
+                        Belum ada log aktivitas
+                    </td>
+                </tr>
+            }
+            @{ int no = 1; }
+            @foreach (var log in Model)
+            {
+                // Warna badge per aksi
+                string actionClass = log.Action switch
+                {
+                    "Login"         => "bc-badge-success",
+                    "Logout"        => "bc-badge-secondary",
+                    "Register"      => "bc-badge-info",
+                    "Create"        => "bc-badge-info",
+                    "Update" or "UpdateUser" => "bc-badge-warning",
+                    "Delete" or "DeleteUser" => "bc-badge-danger",
+                    "ResetPassword" => "bc-badge-process",
+                    "DeactivateUser"=> "bc-badge-danger",
+                    "ActivateUser"  => "bc-badge-success",
+                    _               => "bc-badge-secondary"
+                };
+
+                string actionIcon = log.Action switch
+                {
+                    "Login"         => "",
+                    "Logout"        => "",
+                    "Register"      => "",
+                    "Create"        => "",
+                    "Update" or "UpdateUser" => "",
+                    "Delete" or "DeleteUser" => "",
+                    "ResetPassword" => "",
+                    _               => ""
+                };
+
+                <tr>
+                    <td style="color:#95a5a6;font-size:0.8rem">@no</td>
+                    <td>
+                        <div style="font-size:0.82rem;font-weight:600">@log.Timestamp.ToString("dd MMM yyyy")</div>
+                        <div style="font-size:0.75rem;color:#95a5a6">@log.Timestamp.ToString("HH:mm:ss")</div>
+                    </td>
+                    <td>
+                        <div class="bc-tbl-name" style="font-size:0.83rem">@(log.UserName ?? "-")</div>
+                        <div class="bc-tbl-sub">@(log.UserId?.Substring(0, 8) ?? "-")...</div>
+                    </td>
+                    <td>
+                        <span class="bc-badge @actionClass">@actionIcon @log.Action</span>
+                    </td>
+                    <td style="font-size:0.82rem;font-weight:600;color:#34495e">@log.TableName</td>
+                    <td style="font-size:0.78rem;color:#95a5a6;font-family:monospace">
+                        @(log.RecordId?.Length > 8 ? log.RecordId.Substring(0, 8) + "..." : log.RecordId ?? "-")
+                    </td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(log.OldValues) || !string.IsNullOrEmpty(log.NewValues))
+                        {
+                            <a asp-action="Detail" asp-route-id="@log.Id" class="bc-btn-detail">Lihat</a>
+                        }
+                        else
+                        {
+                            <span style="color:#bdc3c7;font-size:0.78rem">-</span>
+                        }
+                    </td>
+                </tr>
+                no++;
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+<script>
+    document.querySelectorAll('.btn-confirm-clear').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var form = this.closest('form');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Hapus Log Lama?',
+                text: 'Semua log lebih dari 30 hari akan dihapus permanen!',
+                showCancelButton: true,
+                confirmButtonColor: '#c0392b',
+                cancelButtonColor: '#7f8c8d',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then(function(result) {
+                if (result.isConfirmed) form.submit();
+            });
+        });
+    });
+</script>
+}

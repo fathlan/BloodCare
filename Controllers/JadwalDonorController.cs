@@ -1,30 +1,71 @@
 using BloodCare.Data;
 using BloodCare.Models;
+using BloodCare.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 
 namespace BloodCare.Controllers
 {
-    // TIDAK ada [Authorize] di level class
-    // supaya Index/Details bisa diakses User Umum tanpa login,
-    // sesuai use case "Melihat jadwal donor darah"
+
     public class JadwalDonorController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public JadwalDonorController(ApplicationDbContext context)
+        public JadwalDonorController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
-        // GET: JadwalDonor -> PUBLIK (User Umum, Pendonor, Petugas, Admin semua bisa lihat)
+        // GET: JadwalDonor publik
         public async Task<IActionResult> Index()
         {
             var data = await _context.JadwalDonors
                 .OrderByDescending(j => j.Tanggal)
                 .ToListAsync();
-            return View(data);
+
+            var jadwalIds = data.Select(j => j.Id).ToList();
+
+            // Hitung jumlah pendaftar per jadwal dari tabel PendaftaranJadwals
+            var jumlahPerJadwal = await _context.PendaftaranJadwals
+                .Where(p => jadwalIds.Contains(p.JadwalDonorId))
+                .GroupBy(p => p.JadwalDonorId)
+                .Select(g => new { JadwalDonorId = g.Key, Total = g.Count() })
+                .ToDictionaryAsync(x => x.JadwalDonorId, x => x.Total);
+
+            // Kalau yang login adalah Pendonor, cek jadwal mana saja yang sudah dia daftar
+            var sudahDaftarIds = new HashSet<int>();
+            if (User.Identity!.IsAuthenticated && User.IsInRole("Pendonor"))
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user != null)
+                {
+                    var idsTerdaftar = await _context.PendaftaranJadwals
+                        .Where(p => jadwalIds.Contains(p.JadwalDonorId) && p.PendonorUserId == user.Id)
+                        .Select(p => p.JadwalDonorId)
+                        .ToListAsync();
+                    sudahDaftarIds = idsTerdaftar.ToHashSet();
+                }
+            }
+
+            var viewModel = data.Select(j => new JadwalDonorViewModel
+            {
+                Jadwal = j,
+                JumlahTerdaftar = jumlahPerJadwal.TryGetValue(j.Id, out var total) ? total : 0,
+                SudahDaftar = sudahDaftarIds.Contains(j.Id)
+            }).ToList();
+
+            // Admin melihat tabel kelola (Create/Edit/Delete).
+            // Selain Admin (Petugas, Pendonor, User Umum) melihat kartu ringkas sesuai mockup.
+            if (!User.IsInRole("Admin"))
+            {
+                return View("IndexCards", viewModel);
+            }
+
+            return View(viewModel);
         }
 
         // GET: JadwalDonor/Details/5 -> PUBLIK

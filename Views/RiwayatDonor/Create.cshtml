@@ -1,0 +1,60 @@
+@model BloodCare.Models.RiwayatDonor
+@{
+    ViewData["Title"] = "Input Riwayat Donor";
+}
+
+<div class="bc-hero mb-4">
+    <div>
+        <h2 style="font-size:1.7rem;font-weight:800;margin-bottom:6px">Input Riwayat Donor</h2>
+        <p style="opacity:0.88;font-size:0.92rem">Data pendonor terisi otomatis dari daftar kehadiran jadwal.</p>
+    </div>
+</div>
+
+<form asp-controller="RiwayatDonor" asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="PendaftaranJadwalId" />
+    <input type="hidden" asp-for="PendonorId" />
+    <input type="hidden" asp-for="JadwalDonorId" />
+    <div class="bc-card mb-4" style="padding:26px">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Nama Pendonor</label>
+                <input asp-for="NamaPendonor" class="form-control bg-light" readonly />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Tanggal Donor</label>
+                <input asp-for="TanggalDonor" type="date" class="form-control" value="@Model.TanggalDonor.ToString("yyyy-MM-dd")" required />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Lokasi Donor</label>
+                <input asp-for="LokasiDonor" class="form-control" required />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Jumlah Darah (ml)</label>
+                <input asp-for="JumlahDarahMl" type="number" class="form-control" min="50" max="1000" placeholder="Contoh: 350" required />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Golongan Darah</label>
+                <input asp-for="GolonganDarah" class="form-control bg-light" readonly />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Rhesus</label>
+                <input asp-for="Rhesus" class="form-control bg-light" readonly />
+            </div>
+            <div class="col-12">
+                <label class="form-label fw-semibold">Catatan Tambahan</label>
+                <textarea asp-for="CatatanTambahan" class="form-control" rows="3" placeholder="Masukkan observasi medis atau catatan khusus di sini..."></textarea>
+            </div>
+        </div>
+
+        <div style="background:#fdecea;border-left:4px solid #c0392b;border-radius:8px;padding:14px 18px;margin-top:20px;font-size:0.85rem;color:#7b241c">
+            <i class="fa fa-info-circle"></i>
+            Data riwayat donor yang disimpan akan otomatis memperbarui stok darah di dashboard inventaris nasional secara real-time.
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px">
+            <a asp-controller="PendaftaranJadwal" asp-action="Kehadiran" asp-route-jadwalId="@Model.JadwalDonorId" class="bc-btn-edit">Batal</a>
+            <button type="submit" class="bc-hero-btn"><i class="fa fa-save"></i> Simpan &amp; Perbarui Stok</button>
+        </div>
+    </div>
+</form>

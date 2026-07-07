@@ -18,6 +18,9 @@ namespace BloodCare.Data
         public DbSet<PermintaanDarah> PermintaanDarahs { get; set; }
         public DbSet<JadwalDonor> JadwalDonors { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
+        public DbSet<RiwayatDonor> RiwayatDonors { get; set; }
+        public DbSet<PendaftaranJadwal> PendaftaranJadwals { get; set; }
+        public DbSet<NotifikasiDibaca> NotifikasiDibacas { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

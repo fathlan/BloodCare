@@ -1,0 +1,45 @@
+@model IEnumerable<BloodCare.Controllers.PendaftaranJadwalViewItem>
+@{
+    ViewData["Title"] = "Jadwal Saya";
+}
+
+<div class="bc-hero mb-4">
+    <div>
+        <h2 style="font-size:1.7rem;font-weight:800;margin-bottom:6px">Jadwal Donor Saya</h2>
+        <p style="opacity:0.88;font-size:0.92rem">Daftar kegiatan donor yang sudah Anda ikuti pendaftarannya.</p>
+    </div>
+</div>
+
+<div class="bc-card">
+    <table class="bc-table">
+        <thead><tr><th>Lokasi</th><th>Tanggal</th><th>Status Kehadiran</th></tr></thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var p in Model)
+                {
+                    string badge = p.StatusKehadiran switch
+                    {
+                        "Hadir" => "bc-badge-success",
+                        "Tidak Hadir" => "bc-badge-danger",
+                        _ => "bc-badge-warning"
+                    };
+                    <tr>
+                        <td class="bc-tbl-name">@p.Lokasi</td>
+                        <td>@p.Tanggal.ToString("dd MMM yyyy")</td>
+                        <td><span class="bc-badge @badge">@p.StatusKehadiran</span></td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="3" style="text-align:center;padding:32px;color:#95a5a6">
+                        Anda belum mendaftar ke jadwal donor manapun.
+                        <a asp-controller="JadwalDonor" asp-action="Index">Lihat jadwal tersedia &rarr;</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

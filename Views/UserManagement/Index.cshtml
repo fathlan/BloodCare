@@ -1,0 +1,201 @@
+@model IEnumerable<BloodCare.ViewModels.UserListViewModel>
+
+@{
+    ViewData["Title"] = "Manajemen User";
+}
+
+<!-- PAGE HERO -->
+<div class="bc-page-hero">
+    <div>
+        <h3>👥 Manajemen User</h3>
+        <p>Kelola akun pengguna, role, dan status akses sistem BloodCare.</p>
+    </div>
+</div>
+
+<!-- MINI STATS -->
+<div class="bc-mini-stats mb-4">
+    <div class="bc-mini-stat">
+        <div class="bc-mini-stat-icon blue"><i class="fa fa-users"></i></div>
+        <div>
+            <div class="bc-mini-stat-val">@ViewBag.TotalUser</div>
+            <div class="bc-mini-stat-lbl">Total User</div>
+        </div>
+    </div>
+    <div class="bc-mini-stat">
+        <div class="bc-mini-stat-icon red"><i class="fa fa-user-shield"></i></div>
+        <div>
+            <div class="bc-mini-stat-val">@ViewBag.TotalAdmin</div>
+            <div class="bc-mini-stat-lbl">Admin</div>
+        </div>
+    </div>
+    <div class="bc-mini-stat">
+        <div class="bc-mini-stat-icon orange"><i class="fa fa-user-tie"></i></div>
+        <div>
+            <div class="bc-mini-stat-val">@ViewBag.TotalPetugas</div>
+            <div class="bc-mini-stat-lbl">Petugas</div>
+        </div>
+    </div>
+    <div class="bc-mini-stat">
+        <div class="bc-mini-stat-icon green"><i class="fa fa-user"></i></div>
+        <div>
+            <div class="bc-mini-stat-val">@ViewBag.TotalPendonor</div>
+            <div class="bc-mini-stat-lbl">Pendonor</div>
+        </div>
+    </div>
+</div>
+
+<!-- TABLE -->
+<div class="bc-card">
+    <div class="bc-card-header">
+        <span class="bc-card-title">Daftar Semua User</span>
+    </div>
+    <table class="bc-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nama</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="6" style="text-align:center;padding:32px;color:#95a5a6">Belum ada user</td>
+                </tr>
+            }
+            @{ int no = 1; }
+            @foreach (var user in Model)
+            {
+                string roleClass = user.Role == "Admin" ? "bc-badge-danger" :
+                                   user.Role == "Petugas" ? "bc-badge-warning" :
+                                   user.Role == "Pendonor" ? "bc-badge-success" : "bc-badge-secondary";
+
+                string initials = user.FullName.Length >= 2
+                    ? user.FullName.Substring(0, 1).ToUpper() + (user.FullName.Contains(" ")
+                        ? user.FullName.Split(' ')[1].Substring(0, 1).ToUpper()
+                        : user.FullName.Substring(1, 1).ToUpper())
+                    : user.FullName.ToUpper();
+
+                <tr>
+                    <td>@no</td>
+                    <td>
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <span class="bc-tbl-avatar" style="background:#c0392b">@initials</span>
+                            <div>
+                                <div class="bc-tbl-name">@user.FullName</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="font-size:0.83rem;color:#555">@user.Email</td>
+                    <td><span class="bc-badge @roleClass">@user.Role</span></td>
+                    <td>
+                        @if (user.IsActive)
+                        {
+                            <span class="bc-badge bc-badge-success">Aktif</span>
+                        }
+                        else
+                        {
+                            <span class="bc-badge bc-badge-secondary">Nonaktif</span>
+                        }
+                    </td>
+                    <td>
+                        <div style="display:flex;gap:5px;flex-wrap:wrap">
+                            <a asp-action="Detail" asp-route-id="@user.Id" class="bc-btn-detail">Detail</a>
+                            <a asp-action="Edit" asp-route-id="@user.Id" class="bc-btn-edit">Edit</a>
+
+                            <!-- Toggle Aktif/Nonaktif -->
+                            <form asp-action="ToggleActive" method="post" style="display:inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@user.Id" />
+                                <button type="submit"
+                                        class="bc-btn-add btn-confirm-toggle"
+                                        data-nama="@user.Email"
+                                        data-status="@(user.IsActive ? "nonaktifkan" : "aktifkan")"
+                                        style="background:@(user.IsActive ? "#e67e22" : "#27ae60")">
+                                    @(user.IsActive ? "Nonaktifkan" : "Aktifkan")
+                                </button>
+                            </form>
+
+                            <!-- Reset Password -->
+                            <form asp-action="ResetPassword" method="post" style="display:inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@user.Id" />
+                                <button type="submit"
+                                        class="bc-btn-detail btn-confirm-reset"
+                                        data-nama="@user.Email">
+                                    Reset PW
+                                </button>
+                            </form>
+
+                            <!-- Hapus -->
+                            <form asp-action="Delete" method="post" style="display:inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@user.Id" />
+                                <button type="submit"
+                                        class="bc-btn-del btn-confirm-delete"
+                                        data-nama="@user.Email">
+                                    Hapus
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                no++;
+            }
+        </tbody>
+    </table>
+    <div class="bc-pagination">
+        <span>Menampilkan @Model.Count() user</span>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    // Konfirmasi Toggle Aktif/Nonaktif
+    document.querySelectorAll('.btn-confirm-toggle').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var form = this.closest('form');
+            var nama = this.getAttribute('data-nama');
+            var status = this.getAttribute('data-status');
+            Swal.fire({
+                icon: 'question',
+                title: 'Ubah Status?',
+                text: 'Yakin ingin ' + status + ' akun ' + nama + '?',
+                showCancelButton: true,
+                confirmButtonColor: '#c0392b',
+                cancelButtonColor: '#7f8c8d',
+                confirmButtonText: 'Ya, Lanjutkan!',
+                cancelButtonText: 'Batal'
+            }).then(function(result) {
+                if (result.isConfirmed) form.submit();
+            });
+        });
+    });
+
+    // Konfirmasi Reset Password
+    document.querySelectorAll('.btn-confirm-reset').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var form = this.closest('form');
+            var nama = this.getAttribute('data-nama');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Reset Password?',
+                text: 'Password ' + nama + ' akan direset ke "Reset@123"',
+                showCancelButton: true,
+                confirmButtonColor: '#2471a3',
+                cancelButtonColor: '#7f8c8d',
+                confirmButtonText: 'Ya, Reset!',
+                cancelButtonText: 'Batal'
+            }).then(function(result) {
+                if (result.isConfirmed) form.submit();
+            });
+        });
+    });
+</script>
+}

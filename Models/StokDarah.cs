@@ -1,4 +1,3 @@
-﻿using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace BloodCare.Models
@@ -7,24 +6,24 @@ namespace BloodCare.Models
     {
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Golongan darah wajib dipilih")]
         [Display(Name = "Golongan Darah")]
         public string GolonganDarah { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = "Rhesus wajib dipilih")]
         public string Rhesus { get; set; } = string.Empty;
 
-        [Required]
-        [Range(1, 1000)]
+        [Required(ErrorMessage = "Jumlah kantong wajib diisi")]
+        [Range(0, 10000, ErrorMessage = "Jumlah harus antara 0 - 10000")]
         [Display(Name = "Jumlah Kantong")]
         public int JumlahKantong { get; set; }
 
-        [Required]
-        [Display(Name = "Tanggal Masuk")]
-        public DateTime TanggalMasuk { get; set; }
+        [Display(Name = "Batas Kadaluarsa")]
+        public DateTime? TanggalKadaluarsa { get; set; }
 
-        [Required]
-        [Display(Name = "Tanggal Kadaluarsa")]
-        public DateTime TanggalKadaluarsa { get; set; }
+        [Display(Name = "Terakhir Diperbarui")]
+        public DateTime TerakhirDiperbarui { get; set; } = DateTime.Now;
+
+        public string? Keterangan { get; set; }
     }
 }

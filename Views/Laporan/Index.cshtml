@@ -1,0 +1,99 @@
+@{
+    ViewData["Title"] = "Laporan";
+    DateTime dari = ViewBag.Dari;
+    DateTime sampai = ViewBag.Sampai;
+    var donorPerGol = ViewBag.DonorPerGolongan as IEnumerable<dynamic>;
+    var stokPerGol = ViewBag.StokPerGolongan as IEnumerable<BloodCare.Models.StokDarah>;
+}
+
+<div class="bc-hero mb-4">
+    <div>
+        <h2 style="font-size:1.7rem;font-weight:800;margin-bottom:6px">Laporan</h2>
+        <p style="opacity:0.88;font-size:0.92rem">Ringkasan data donor darah, stok, dan jadwal dalam periode tertentu.</p>
+    </div>
+</div>
+
+<div class="bc-card mb-4" style="padding:16px 22px">
+    <form method="get" style="display:flex;gap:14px;align-items:end;flex-wrap:wrap">
+        <div>
+            <label class="form-label fw-semibold" style="font-size:0.82rem">Dari Tanggal</label>
+            <input type="date" name="dari" class="form-control" value="@dari.ToString("yyyy-MM-dd")" />
+        </div>
+        <div>
+            <label class="form-label fw-semibold" style="font-size:0.82rem">Sampai Tanggal</label>
+            <input type="date" name="sampai" class="form-control" value="@sampai.ToString("yyyy-MM-dd")" />
+        </div>
+        <button type="submit" class="bc-hero-btn"><i class="fa fa-filter"></i> Terapkan</button>
+        <a asp-action="Export" asp-route-dari="@dari.ToString("yyyy-MM-dd")" asp-route-sampai="@sampai.ToString("yyyy-MM-dd")"
+           class="bc-btn-edit" style="text-decoration:none">
+            <i class="fa fa-download"></i> Export CSV
+        </a>
+    </form>
+</div>
+
+<div class="bc-stat-grid mb-4">
+    <div class="bc-stat-card">
+        <div class="bc-stat-label">Total Riwayat Donor (Periode)</div>
+        <div class="bc-stat-value">@ViewBag.TotalDonorPeriode</div>
+        <div class="bc-stat-sub info">@ViewBag.TotalMlPeriode ml total darah terkumpul</div>
+    </div>
+    <div class="bc-stat-card">
+        <div class="bc-stat-label">Pendonor Baru (Periode)</div>
+        <div class="bc-stat-value">@ViewBag.PendonorBaruPeriode</div>
+        <div class="bc-stat-sub info">dari total @ViewBag.TotalPendonor pendonor terdaftar</div>
+    </div>
+    <div class="bc-stat-card">
+        <div class="bc-stat-label">Jadwal Donor (Periode)</div>
+        <div class="bc-stat-value">@ViewBag.TotalJadwalPeriode</div>
+        <div class="bc-stat-sub info">kegiatan terjadwal</div>
+    </div>
+    <div class="bc-stat-card">
+        <div class="bc-stat-label">Permintaan Darah (Periode)</div>
+        <div class="bc-stat-value">@ViewBag.TotalPermintaanPeriode</div>
+        <div class="bc-stat-sub info">@ViewBag.PermintaanTerpenuhi terpenuhi</div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="bc-card">
+            <div class="bc-card-header"><span class="bc-card-title" style="font-weight:700">Donor per Golongan Darah (Periode)</span></div>
+            <table class="bc-table">
+                <thead><tr><th>Golongan</th><th>Jumlah Donor</th></tr></thead>
+                <tbody>
+                    @if (donorPerGol != null && donorPerGol.Any())
+                    {
+                        foreach (var g in donorPerGol)
+                        {
+                            <tr><td class="bc-tbl-name">@g.Golongan</td><td>@g.Jumlah</td></tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="2" style="text-align:center;padding:20px;color:#95a5a6">Tidak ada data di periode ini</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="bc-card">
+            <div class="bc-card-header">
+                <span class="bc-card-title" style="font-weight:700">Stok Darah Saat Ini</span>
+                <span style="font-size:0.82rem;color:#7f8c8d">Total: @ViewBag.TotalStok kantong</span>
+            </div>
+            <table class="bc-table">
+                <thead><tr><th>Golongan</th><th>Jumlah</th></tr></thead>
+                <tbody>
+                    @if (stokPerGol != null && stokPerGol.Any())
+                    {
+                        foreach (var s in stokPerGol)
+                        {
+                            <tr><td class="bc-tbl-name">@s.GolonganDarah@s.Rhesus</td><td>@s.JumlahKantong kantong</td></tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

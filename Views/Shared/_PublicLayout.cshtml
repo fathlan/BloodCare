@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BloodCare</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/bloodcare.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root {
+            --red: #d21f2f;
+            --red-dark: #a01521;
+        }
+        body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: #f7f8fb; }
+        a { text-decoration: none; }
+
+        .pl-navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 32px;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .pl-navbar .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 19px;
+            color: #101828;
+        }
+        .pl-nav-links { display: flex; gap: 28px; font-weight: 500; font-size: 14.5px; }
+        .pl-nav-links a { color: #333; }
+        .pl-nav-links a.active { color: var(--red); font-weight: 700; }
+        .pl-nav-actions { display: flex; align-items: center; gap: 18px; }
+        .pl-btn-login { color: var(--red); font-weight: 600; font-size: 14.5px; }
+        .pl-btn-daftar {
+            background: var(--red);
+            color: #fff;
+            padding: 9px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14.5px;
+        }
+        .pl-btn-daftar:hover { background: var(--red-dark); }
+
+        .pl-content { max-width: 1180px; margin: 0 auto; padding: 32px 24px 60px; }
+
+        @@media (max-width: 800px) {
+            .pl-nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="pl-navbar">
+        <a asp-controller="Home" asp-action="Index" class="logo">BloodCare</a>
+        <div class="pl-nav-links">
+            <a asp-controller="Home" asp-action="Index">Home</a>
+            <a asp-controller="JadwalDonor" asp-action="Index"
+               class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "JadwalDonor" ? "active" : "")">
+                Jadwal Donor
+            </a>
+        </div>
+        <div class="pl-nav-actions">
+            <a asp-controller="Auth" asp-action="Login" class="pl-btn-login">Login</a>
+            <a asp-controller="Auth" asp-action="Register" class="pl-btn-daftar">Daftar</a>
+        </div>
+    </nav>
+
+    <div class="pl-content">
+        @RenderBody()
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        @if (TempData["SweetSuccess"] != null)
+        {
+            <text>
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '@TempData["SweetSuccess"]',
+                timer: 2500,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+            </text>
+        }
+        @if (TempData["SweetError"] != null)
+        {
+            <text>
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal!',
+                text: '@TempData["SweetError"]',
+                confirmButtonColor: '#c0392b'
+            });
+            </text>
+        }
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

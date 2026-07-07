@@ -7,7 +7,7 @@
 <div style="max-width:640px;margin:0 auto">
     <div class="bc-form-card">
         <div class="bc-form-header" style="background:linear-gradient(135deg,#d35400,#e67e22)">
-            <h5>✏️ Edit Permintaan Darah</h5>
+            <h5>Edit Permintaan Darah</h5>
             <div style="font-size:0.82rem;opacity:0.85;margin-top:3px">Perbarui data permintaan darah</div>
         </div>
         <div class="bc-form-body">
@@ -61,9 +61,14 @@
                             <option value="@s">@s</option>
                         }
                     </select>
+                    <span asp-validation-for="Status" class="text-danger small"></span>
+                    <div class="form-text">
+                        <i class="fa fa-info-circle"></i>
+                        Status hanya bisa diubah ke "Selesai" jika stok darah golongan ini mencukupi.
+                    </div>
                 </div>
                 <div style="display:flex;gap:10px">
-                    <button type="submit" class="bc-btn-primary" style="background:#d35400">💾 Update Permintaan</button>
+                    <button type="submit" class="bc-btn-primary" style="background:#d35400">Update Permintaan</button>
                     <a asp-action="Index" class="bc-btn-secondary">Batal</a>
                 </div>
             </form>
