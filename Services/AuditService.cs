@@ -3,12 +3,6 @@ using BloodCare.Models;
 
 namespace BloodCare.Services
 {
-    public interface IAuditService
-    {
-        Task LogAsync(string? userId, string? userName, string action, string tableName,
-            string? recordId = null, string? oldValues = null, string? newValues = null);
-    }
-
     public class AuditService : IAuditService
     {
         private readonly ApplicationDbContext _context;
@@ -18,8 +12,13 @@ namespace BloodCare.Services
             _context = context;
         }
 
-        public async Task LogAsync(string? userId, string? userName, string action, string tableName,
-            string? recordId = null, string? oldValues = null, string? newValues = null)
+        public async Task LogAsync(
+            string? userId,
+            string? userName,
+            string action,
+            string tableName,
+            string? recordId,
+            string? note = null)
         {
             var log = new AuditLog
             {
@@ -28,13 +27,22 @@ namespace BloodCare.Services
                 Action = action,
                 TableName = tableName,
                 RecordId = recordId,
-                OldValues = oldValues,
-                NewValues = newValues,
+                NewValues = note,
                 Timestamp = DateTime.Now
             };
 
             _context.AuditLogs.Add(log);
-            await _context.SaveChangesAsync();
+
+            // Audit trail tidak boleh menggagalkan aksi utama pengguna kalau gagal disimpan.
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                // Sengaja ditelan: mencatat log gagal bukan alasan untuk membatalkan
+                // operasi utama (mis. simpan riwayat donor) yang sudah terjadi.
+            }
         }
     }
 }

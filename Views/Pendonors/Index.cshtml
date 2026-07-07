@@ -1,313 +1,163 @@
-﻿@model IEnumerable<BloodCare.Models.Pendonor>
+@model IEnumerable<BloodCare.Models.Pendonor>
 
 @{
     ViewData["Title"] = "Data Pendonor";
+    var stokPerGol = ViewBag.StokPerGol as IEnumerable<dynamic>;
 }
 
-<div class="bloodcare-page">
-    <div class="page-header">
+<!-- PAGE HERO -->
+<div class="bc-page-hero mb-4">
+    <div>
+        <h3>Data Pendonor</h3>
+        <p>Kelola data pendonor darah secara lebih cepat, rapi, dan terorganisir.</p>
+    </div>
+    <a asp-action="Create" class="bc-hero-btn">
+        <i class="fa fa-plus-circle me-1"></i> Tambah Pendonor
+    </a>
+</div>
+
+<!-- MINI STATS -->
+<div class="bc-mini-stats mb-4">
+    <div class="bc-mini-stat">
+        <div class="bc-mini-stat-icon red"><i class="fa fa-users"></i></div>
         <div>
-            <span class="page-label">BloodCare Management</span>
-            <h1>Data Pendonor</h1>
-            <p>Kelola data pendonor darah secara lebih cepat, rapi, dan terorganisir.</p>
-        </div>
-
-        <a asp-action="Create" class="btn-add">
-            <span>+</span> Tambah Pendonor
-        </a>
-    </div>
-
-    <div class="stats-grid">
-        <div class="stat-card">
-            <span>Total Pendonor</span>
-            <h3>@Model.Count()</h3>
-        </div>
-        <div class="stat-card">
-            <span>Golongan Darah</span>
-            <h3>A B AB O</h3>
-        </div>
-        <div class="stat-card">
-            <span>Status Sistem</span>
-            <h3>Aktif</h3>
+            <div style="font-size:0.75rem;color:#7f8c8d;text-transform:uppercase;letter-spacing:0.05em">Total Pendonor</div>
+            <div class="bc-mini-stat-val">@ViewBag.TotalPendonor.ToString("N0")</div>
+            <div class="bc-mini-stat-sub" style="color:#27ae60">↑ +12% dari bulan lalu</div>
         </div>
     </div>
-
-    <div class="data-card">
-        <div class="data-card-header">
-            <div>
-                <h2>Daftar Pendonor</h2>
-                <p>Informasi pendonor yang tersimpan di sistem.</p>
-            </div>
-        </div>
-
-        <div class="table-responsive">
-            <table class="modern-table">
-                <thead>
-                    <tr>
-                        <th>Nama</th>
-                        <th>Umur</th>
-                        <th>Jenis Kelamin</th>
-                        <th>Gol. Darah</th>
-                        <th>Rhesus</th>
-                        <th>Alamat</th>
-                        <th>No HP</th>
-                        <th>Donor Terakhir</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
+    <div class="bc-mini-stat">
+        <div class="bc-mini-stat-icon blue"><i class="fa fa-tint"></i></div>
+        <div>
+            <div style="font-size:0.75rem;color:#7f8c8d;text-transform:uppercase;letter-spacing:0.05em">Golongan Darah</div>
+            <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+                @if (stokPerGol != null)
+                {
+                    foreach (var s in stokPerGol)
                     {
-                        <tr>
-                            <td class="fw-semibold">@item.Nama</td>
-                            <td>@item.Umur</td>
-                            <td>@item.JenisKelamin</td>
-                            <td>
-                                <span class="blood-badge">@item.GolonganDarah</span>
-                            </td>
-                            <td>@item.Rhesus</td>
-                            <td>@item.Alamat</td>
-                            <td>@item.NoHP</td>
-                            <td>@item.TanggalDonorTerakhir.ToString("dd/MM/yyyy")</td>
-                            <td>
-                                <div class="action-group">
-                                    <a asp-action="Edit" asp-route-id="@item.Id" class="action edit">Edit</a>
-                                    <a asp-action="Details" asp-route-id="@item.Id" class="action detail">Detail</a>
-                                    <a asp-action="Delete" asp-route-id="@item.Id" class="action delete">Hapus</a>
-                                </div>
-                            </td>
-                        </tr>
+                        <span style="background:#c0392b;color:#fff;border-radius:20px;padding:3px 10px;font-size:0.78rem;font-weight:700">
+                            @s.Gol: @s.Total
+                        </span>
                     }
-                </tbody>
-            </table>
-        </div>
-
-        @if (!Model.Any())
-        {
-            <div class="empty-state">
-                <h3>Belum ada data pendonor</h3>
-                <p>Tambahkan data pendonor pertama untuk mulai menggunakan sistem BloodCare.</p>
+                }
             </div>
-        }
+        </div>
+    </div>
+    <div class="bc-mini-stat">
+        <div class="bc-mini-stat-icon green"><i class="fa fa-shield-alt"></i></div>
+        <div>
+            <div style="font-size:0.75rem;color:#7f8c8d;text-transform:uppercase;letter-spacing:0.05em">Status Sistem</div>
+            <div style="font-weight:700;font-size:1rem;margin-top:4px">Aktif & Sinkron</div>
+            <div class="bc-mini-stat-sub" style="color:#7f8c8d">Terakhir diperbarui: 5 menit lalu</div>
+        </div>
     </div>
 </div>
 
-<style>
-    body {
-        background: linear-gradient(135deg, #fff5f5 0%, #ffffff 45%, #f8fafc 100%);
-        font-family: 'Segoe UI', sans-serif;
-    }
+<!-- FILTER & SEARCH -->
+<div class="bc-card mb-3">
+    <div class="bc-card-header">
+        <span class="bc-card-title">Daftar Pendonor</span>
+        <div style="display:flex;gap:8px;align-items:center">
+            <form asp-action="Index" method="get" style="display:flex;gap:8px">
+                <input type="text" name="search" class="form-control form-control-sm"
+                       placeholder="Cari nama / no HP..." value="@ViewBag.Search"
+                       style="width:200px;border-radius:7px" />
+                <select name="filterGol" class="form-select form-select-sm" style="width:120px;border-radius:7px">
+                    <option value="">Semua Gol.</option>
+                    @foreach (var g in new[]{"A","B","AB","O"})
+                    {
+                        <option value="@g" selected="@(ViewBag.FilterGol == g)">Gol. @g</option>
+                    }
+                </select>
+                <button type="submit" class="bc-btn-primary" style="padding:6px 14px;font-size:0.82rem">
+                    <i class="fa fa-search"></i>
+                </button>
+                @if (!string.IsNullOrEmpty(ViewBag.Search as string) || !string.IsNullOrEmpty(ViewBag.FilterGol as string))
+                {
+                    <a asp-action="Index" class="bc-btn-secondary" style="padding:6px 14px;font-size:0.82rem">Reset</a>
+                }
+            </form>
+            <button class="bc-icon-btn" title="Export"><i class="fa fa-download"></i></button>
+        </div>
+    </div>
 
-    .bloodcare-page {
-        padding: 28px 0 60px;
-    }
+    <table class="bc-table">
+        <thead>
+            <tr>
+                <th>Nama</th>
+                <th>Umur</th>
+                <th>Jenis Kelamin</th>
+                <th>Gol. Darah</th>
+                <th>Rhesus</th>
+                <th>Alamat</th>
+                <th>No HP</th>
+                <th>Donor Terakhir</th>
+                <th>Status</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="10" style="text-align:center;padding:32px;color:#95a5a6">
+                        Belum ada data pendonor
+                    </td>
+                </tr>
+            }
+            @foreach (var item in Model)
+            {
+                string[] parts = item.NamaLengkap.Split(' ');
+                string inisial = parts[0].Substring(0,1).ToUpper();
+                if (parts.Length > 1) inisial += parts[1].Substring(0,1).ToUpper();
 
-    .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 20px;
-        margin-bottom: 24px;
-        padding: 28px;
-        border-radius: 28px;
-        background: linear-gradient(135deg, #b91c1c, #ef4444);
-        color: white;
-        box-shadow: 0 20px 45px rgba(185, 28, 28, 0.22);
-    }
+                string statusClass = item.Status == "Aktif" ? "bc-badge-success" : "bc-badge-secondary";
 
-    .page-label {
-        display: inline-block;
-        margin-bottom: 10px;
-        padding: 6px 12px;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.18);
-        font-size: 13px;
-        letter-spacing: 0.4px;
-    }
-
-    .page-header h1 {
-        margin: 0;
-        font-size: 36px;
-        font-weight: 800;
-    }
-
-    .page-header p {
-        margin: 8px 0 0;
-        opacity: 0.9;
-    }
-
-    .btn-add {
-        text-decoration: none;
-        background: #ffffff;
-        color: #b91c1c;
-        padding: 13px 20px;
-        border-radius: 16px;
-        font-weight: 700;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.12);
-        transition: 0.2s;
-        white-space: nowrap;
-    }
-
-    .btn-add:hover {
-        transform: translateY(-2px);
-        color: #991b1b;
-    }
-
-    .btn-add span {
-        font-size: 20px;
-        margin-right: 4px;
-    }
-
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 18px;
-        margin-bottom: 24px;
-    }
-
-    .stat-card {
-        padding: 22px;
-        border-radius: 22px;
-        background: rgba(255, 255, 255, 0.86);
-        border: 1px solid rgba(239, 68, 68, 0.12);
-        box-shadow: 0 12px 35px rgba(15, 23, 42, 0.07);
-    }
-
-    .stat-card span {
-        color: #64748b;
-        font-size: 14px;
-    }
-
-    .stat-card h3 {
-        margin: 8px 0 0;
-        color: #111827;
-        font-size: 26px;
-        font-weight: 800;
-    }
-
-    .data-card {
-        border-radius: 28px;
-        background: white;
-        border: 1px solid #fee2e2;
-        box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
-        overflow: hidden;
-    }
-
-    .data-card-header {
-        padding: 24px 28px;
-        border-bottom: 1px solid #fee2e2;
-        background: linear-gradient(180deg, #ffffff, #fff7f7);
-    }
-
-    .data-card-header h2 {
-        margin: 0;
-        font-size: 24px;
-        font-weight: 800;
-        color: #111827;
-    }
-
-    .data-card-header p {
-        margin: 6px 0 0;
-        color: #64748b;
-    }
-
-    .modern-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .modern-table thead {
-        background: #111827;
-        color: white;
-    }
-
-    .modern-table th {
-        padding: 16px;
-        font-size: 14px;
-        font-weight: 700;
-        white-space: nowrap;
-    }
-
-    .modern-table td {
-        padding: 16px;
-        border-bottom: 1px solid #f1f5f9;
-        color: #334155;
-        vertical-align: middle;
-        white-space: nowrap;
-    }
-
-    .modern-table tbody tr {
-        transition: 0.2s;
-    }
-
-    .modern-table tbody tr:hover {
-        background: #fff7f7;
-    }
-
-    .blood-badge {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 42px;
-        padding: 6px 12px;
-        border-radius: 999px;
-        background: linear-gradient(135deg, #dc2626, #fb7185);
-        color: white;
-        font-weight: 800;
-        box-shadow: 0 8px 16px rgba(220, 38, 38, 0.22);
-    }
-
-    .action-group {
-        display: flex;
-        gap: 8px;
-    }
-
-    .action {
-        text-decoration: none;
-        padding: 7px 11px;
-        border-radius: 10px;
-        font-size: 13px;
-        font-weight: 700;
-    }
-
-    .action.edit {
-        background: #fef3c7;
-        color: #92400e;
-    }
-
-    .action.detail {
-        background: #e0f2fe;
-        color: #075985;
-    }
-
-    .action.delete {
-        background: #fee2e2;
-        color: #991b1b;
-    }
-
-    .empty-state {
-        padding: 44px;
-        text-align: center;
-        color: #64748b;
-    }
-
-    .empty-state h3 {
-        color: #111827;
-        font-weight: 800;
-    }
-
-    @@media (max-width: 768px) {
-        .page-header {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .stats-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .page-header h1 {
-            font-size: 28px;
-        }
-    }
-</style>
+                <tr>
+                    <td>
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <span class="bc-tbl-avatar" style="background:#c0392b">@inisial</span>
+                            <div>
+                                <div class="bc-tbl-name">@item.NamaLengkap</div>
+                                <div class="bc-tbl-sub">@(item.Email ?? "-")</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>@item.Umur</td>
+                    <td>@item.JenisKelamin</td>
+                    <td>
+                        <span style="background:#c0392b;color:#fff;width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem">
+                            @item.GolonganDarah
+                        </span>
+                    </td>
+                    <td style="font-weight:600;color:@(item.Rhesus == "+" ? "#27ae60" : "#c0392b")">
+                        @(item.Rhesus == "+" ? "+ (Positif)" : "- (Negatif)")
+                    </td>
+                    <td style="font-size:0.82rem;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                        @item.Alamat
+                    </td>
+                    <td style="font-size:0.82rem">@item.NoHp</td>
+                    <td style="font-size:0.82rem;color:#7f8c8d">
+                        @(item.DonorTerakhir.HasValue ? item.DonorTerakhir.Value.ToString("dd MMM yyyy") : "-")
+                    </td>
+                    <td><span class="bc-badge @statusClass">@item.Status</span></td>
+                    <td>
+                        <div style="display:flex;gap:5px">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="bc-btn-detail">Detail</a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="bc-btn-edit">Edit</a>
+                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="bc-btn-del btn-confirm-delete"
+                                        data-nama="@item.NamaLengkap">Hapus</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="bc-pagination">
+        <span>Menampilkan @Model.Count() dari @ViewBag.TotalPendonor pendonor</span>
+        <div class="bc-page-btn active">1</div>
+    </div>
+</div>

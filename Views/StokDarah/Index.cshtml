@@ -1,83 +1,134 @@
-﻿@model IEnumerable<BloodCare.Models.StokDarah>
+@model IEnumerable<BloodCare.Models.StokDarah>
 
 @{
-    ViewData["Title"] = "Data Stok Darah";
+    ViewData["Title"] = "Stok Darah";
+    var stokPerGol = ViewBag.StokPerGol as IEnumerable<dynamic>;
+    var golDefs = new[] {
+        new { Key="A",  Color="#c0392b" },
+        new { Key="B",  Color="#2471a3" },
+        new { Key="AB", Color="#8e44ad" },
+        new { Key="O",  Color="#27ae60" },
+    };
 }
 
-<section class="blood-hero">
+<!-- PAGE HERO -->
+<div class="bc-page-hero mb-4">
     <div>
-        <span class="badge-soft">BloodCare Management</span>
-        <h1>Data Stok Darah</h1>
-        <p>Kelola ketersediaan stok darah berdasarkan golongan darah dan rhesus.</p>
+        <h3>Stok Darah</h3>
+        <p>Pantau dan kelola ketersediaan stok darah per golongan secara real-time.</p>
     </div>
-
-    <a asp-action="Create" class="btn-hero">+ Tambah Stok</a>
-</section>
-
-<div class="stats-grid">
-    <div class="stat-card">
-        <p>Total Data Stok</p>
-        <h2>@Model.Count()</h2>
-    </div>
-
-    <div class="stat-card">
-        <p>Total Kantong Darah</p>
-        <h2>@Model.Sum(x => x.JumlahKantong)</h2>
-    </div>
-
-    <div class="stat-card">
-        <p>Status Sistem</p>
-        <h2>Aktif</h2>
-    </div>
+    @if (!User.IsInRole("Pendonor"))
+    {
+        <a asp-action="Create" class="bc-hero-btn">+ Tambah Stok</a>
+    }
 </div>
 
-<section class="table-card">
-    <div class="table-header">
-        <h2>Daftar Stok Darah</h2>
-        <p>Informasi stok darah yang tersimpan di sistem.</p>
-    </div>
+<!-- KARTU PER GOLONGAN -->
+<div class="bc-stat-grid mb-4">
+    @foreach (var g in golDefs)
+    {
+        int kantong = 0;
+        if (stokPerGol != null)
+            foreach (var s in stokPerGol)
+                if ((string)s.Gol == g.Key) kantong = (int)s.Total;
 
-    <div class="table-responsive">
-        <table class="table blood-table">
-            <thead>
-                <tr>
-                    <th>Gol. Darah</th>
-                    <th>Rhesus</th>
-                    <th>Jumlah Stok</th>
-                    <th>Tanggal Update</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model.Any())
-                {
-                    foreach (var item in Model)
-                    {
-                        <tr>
-                            <td>
-                                <span class="blood-badge">@item.GolonganDarah</span>
-                            </td>
-                            <td>@item.Rhesus</td>
-                            <td>@item.JumlahKantong Kantong</td>
-                            <td>@item.TanggalMasuk.ToString("dd/MM/yyyy HH:mm")</td>
-                            <td>
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn-action edit">Edit</a>
-                                <a asp-action="Details" asp-route-id="@item.Id" class="btn-action detail">Detail</a>
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn-action delete">Hapus</a>
-                            </td>
-                        </tr>
-                    }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="5" class="empty-data">
-                            <h2>Belum ada data stok darah</h2>
-                            <p>Tambahkan data stok darah pertama untuk mulai menggunakan sistem BloodCare.</p>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        string statusLabel = kantong == 0 ? "Habis" : kantong < 10 ? "Kritis" : kantong < 20 ? "Rendah" : "Aman";
+        string statusClass = kantong == 0 ? "bc-badge-danger" : kantong < 10 ? "bc-badge-danger" : kantong < 20 ? "bc-badge-warning" : "bc-badge-success";
+
+        <div class="bc-stat-card">
+            <div class="bc-stat-icon" style="background:@(g.Color)22;color:@g.Color">
+                <strong style="font-size:1rem">@g.Key</strong>
+            </div>
+            <div class="bc-stat-label">Golongan @g.Key</div>
+            <div class="bc-stat-value" style="color:@g.Color">@kantong</div>
+            <div style="margin-top:6px;display:flex;align-items:center;gap:6px">
+                <span class="bc-badge @statusClass" style="font-size:0.72rem">@statusLabel</span>
+                <span style="font-size:0.75rem;color:#95a5a6">kantong</span>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- TABLE -->
+<div class="bc-card">
+    <div class="bc-card-header">
+        <span class="bc-card-title">Daftar Stok Darah</span>
+        @if (!User.IsInRole("Pendonor"))
+        {
+            <a asp-action="Create" class="bc-btn-primary" style="padding:6px 16px;font-size:0.82rem;text-decoration:none">+ Tambah</a>
+        }
     </div>
-</section>
+    <table class="bc-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Golongan Darah</th>
+                <th>Rhesus</th>
+                <th>Jumlah Kantong</th>
+                @if (!User.IsInRole("Pendonor"))
+                {
+                    <th>Kadaluarsa</th>
+                    <th>Terakhir Update</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @{ int totalKolom = User.IsInRole("Pendonor") ? 4 : 8; }
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="@totalKolom" style="text-align:center;padding:32px;color:#95a5a6">Belum ada data stok darah</td>
+                </tr>
+            }
+            @{ int no = 1; }
+            @foreach (var item in Model)
+            {
+                string statusLabel = item.JumlahKantong == 0 ? "Habis" :
+                                     item.JumlahKantong < 10 ? "Kritis" :
+                                     item.JumlahKantong < 20 ? "Rendah" : "Aman";
+                string statusClass = item.JumlahKantong < 10 ? "bc-badge-danger" :
+                                     item.JumlahKantong < 20 ? "bc-badge-warning" : "bc-badge-success";
+                bool kadaluarsa = item.TanggalKadaluarsa.HasValue && item.TanggalKadaluarsa.Value < DateTime.Now;
+
+                <tr>
+                    <td style="color:#95a5a6;font-size:0.8rem">@no</td>
+                    <td>
+                        <span style="background:#c0392b;color:#fff;width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem">
+                            @item.GolonganDarah
+                        </span>
+                    </td>
+                    <td style="font-weight:700;color:@(item.Rhesus == "+" ? "#27ae60" : "#c0392b")">
+                        @(item.Rhesus == "+" ? "+ (Positif)" : "- (Negatif)")
+                    </td>
+                    <td>
+                        <span style="font-size:1.1rem;font-weight:700">@item.JumlahKantong</span>
+                        <span style="font-size:0.78rem;color:#95a5a6"> kantong</span>
+                    </td>
+                    @if (!User.IsInRole("Pendonor"))
+                    {
+                        <td style="font-size:0.82rem;color:@(kadaluarsa ? "#c0392b" : "#555")">
+                            @(item.TanggalKadaluarsa.HasValue
+                                ? item.TanggalKadaluarsa.Value.ToString("dd MMM yyyy")
+                                : "-")
+                        </td>
+                        <td style="font-size:0.8rem;color:#7f8c8d">@item.TerakhirDiperbarui.ToString("dd MMM yyyy HH:mm")</td>
+                        <td><span class="bc-badge @statusClass">@statusLabel</span></td>
+                        <td>
+                            <div style="display:flex;gap:5px">
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="bc-btn-edit">Edit</a>
+                                <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="bc-btn-del btn-confirm-delete"
+                                            data-nama="Gol @item.GolonganDarah@item.Rhesus">Hapus</button>
+                                </form>
+                            </div>
+                        </td>
+                    }
+                </tr>
+                no++;
+            }
+        </tbody>
+    </table>
+</div>

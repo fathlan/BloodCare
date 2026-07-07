@@ -1,73 +1,63 @@
-﻿@model BloodCare.Models.StokDarah
+@model BloodCare.Models.StokDarah
 
 @{
     ViewData["Title"] = "Tambah Stok Darah";
 }
 
-<section class="blood-hero">
-    <div>
-        <span class="badge-soft">BloodCare Stock</span>
-        <h1>Tambah Stok Darah</h1>
-        <p>Masukkan data stok darah agar ketersediaan darah dapat dipantau.</p>
-    </div>
-
-    <a asp-action="Index" class="btn-hero">Kembali</a>
-</section>
-
-<section class="form-card">
-    <div class="form-header">
-        <h2>Form Stok Darah</h2>
-        <p>Pastikan data stok darah sudah sesuai.</p>
-    </div>
-
-    <form asp-action="Create" method="post">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-        <div class="form-grid">
-            <div class="form-group">
-                <label asp-for="GolonganDarah"></label>
-                <select asp-for="GolonganDarah" class="form-control">
-                    <option value="">Pilih Golongan Darah</option>
-                    <option value="A">A</option>
-                    <option value="B">B</option>
-                    <option value="AB">AB</option>
-                    <option value="O">O</option>
-                </select>
-                <span asp-validation-for="GolonganDarah" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Rhesus"></label>
-                <select asp-for="Rhesus" class="form-control">
-                    <option value="">Pilih Rhesus</option>
-                    <option value="Positif (+)">Positif (+)</option>
-                    <option value="Negatif (-)">Negatif (-)</option>
-                </select>
-                <span asp-validation-for="Rhesus" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="JumlahKantong"></label>
-                <input asp-for="JumlahKantong" class="form-control" placeholder="Contoh: 20" />
-                <span asp-validation-for="JumlahKantong" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="TanggalMasuk"></label>
-                <input asp-for="TanggalMasuk" type="date" class="form-control" />
-                <span asp-validation-for="TanggalMasuk" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="TanggalKadaluarsa"></label>
-                <input asp-for="TanggalKadaluarsa" type="date" class="form-control" />
-                <span asp-validation-for="TanggalKadaluarsa" class="text-danger"></span>
-            </div>
+<div style="max-width:560px;margin:0 auto">
+    <div class="bc-form-card">
+        <div class="bc-form-header">
+            <h5> Tambah Stok Darah</h5>
+            <div style="font-size:0.82rem;opacity:0.85;margin-top:3px">Input data stok darah baru</div>
         </div>
-
-        <div class="form-actions">
-            <button type="submit" class="btn-save">Simpan Data</button>
-            <a asp-action="Index" class="btn-cancel">Batal</a>
+        <div class="bc-form-body">
+            <form asp-action="Create">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label asp-for="GolonganDarah" class="form-label">Golongan Darah</label>
+                        <select asp-for="GolonganDarah" class="form-select">
+                            <option value="">-- Pilih --</option>
+                            @foreach (var g in ViewBag.GolonganDarahList as List<string>)
+                            {
+                                <option value="@g">@g</option>
+                            }
+                        </select>
+                        <span asp-validation-for="GolonganDarah" class="text-danger small"></span>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label asp-for="Rhesus" class="form-label">Rhesus</label>
+                        <select asp-for="Rhesus" class="form-select">
+                            <option value="">-- Pilih --</option>
+                            @foreach (var r in ViewBag.RhesusList as List<string>)
+                            {
+                                <option value="@r">@(r == "+" ? "+ (Positif)" : "- (Negatif)")</option>
+                            }
+                        </select>
+                        <span asp-validation-for="Rhesus" class="text-danger small"></span>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="JumlahKantong" class="form-label">Jumlah Kantong</label>
+                    <input asp-for="JumlahKantong" class="form-control" type="number" min="0" placeholder="Jumlah kantong darah" />
+                    <span asp-validation-for="JumlahKantong" class="text-danger small"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="TanggalKadaluarsa" class="form-label">Tanggal Kadaluarsa <span style="color:#95a5a6;font-weight:400">(opsional)</span></label>
+                    <input asp-for="TanggalKadaluarsa" class="form-control" type="date" />
+                </div>
+                <div class="mb-4">
+                    <label asp-for="Keterangan" class="form-label">Keterangan <span style="color:#95a5a6;font-weight:400">(opsional)</span></label>
+                    <textarea asp-for="Keterangan" class="form-control" rows="2"></textarea>
+                </div>
+                <div style="display:flex;gap:10px">
+                    <button type="submit" class="bc-btn-primary">Simpan Stok</button>
+                    <a asp-action="Index" class="bc-btn-secondary">Batal</a>
+                </div>
+            </form>
         </div>
-    </form>
-</section>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

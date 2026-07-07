@@ -1,0 +1,42 @@
+@model IEnumerable<BloodCare.Models.RiwayatDonor>
+@{
+    ViewData["Title"] = "Riwayat Donor Saya";
+}
+
+<div class="bc-hero mb-4">
+    <div>
+        <h2 style="font-size:1.7rem;font-weight:800;margin-bottom:6px">Riwayat Donor Saya</h2>
+        <p style="opacity:0.88;font-size:0.92rem">Histori kegiatan donor darah yang pernah Anda lakukan.</p>
+    </div>
+</div>
+
+<div class="bc-card">
+    <table class="bc-table">
+        <thead>
+            <tr><th>Tanggal</th><th>Lokasi</th><th>Golongan</th><th>Volume</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var r in Model)
+                {
+                    <tr>
+                        <td>@r.TanggalDonor.ToString("dd MMM yyyy")</td>
+                        <td>@r.LokasiDonor</td>
+                        <td>@r.GolonganDarah@r.Rhesus</td>
+                        <td>@r.JumlahDarahMl ml</td>
+                        <td><span class="bc-badge bc-badge-success">@r.Status</span></td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5" style="text-align:center;padding:32px;color:#95a5a6">
+                        Anda belum memiliki riwayat donor. Data akan muncul otomatis setelah Petugas menginput hasil donor Anda di lokasi kegiatan.
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

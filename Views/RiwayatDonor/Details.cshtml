@@ -1,0 +1,24 @@
+@model BloodCare.Models.RiwayatDonor
+@{
+    ViewData["Title"] = "Detail Riwayat Donor";
+}
+
+<div class="bc-hero mb-4">
+    <div>
+        <h2 style="font-size:1.7rem;font-weight:800;margin-bottom:6px">Detail Riwayat Donor</h2>
+    </div>
+</div>
+
+<div class="bc-card" style="padding:22px;max-width:640px">
+    <dl class="row mb-0">
+        <dt class="col-sm-4">Nama Pendonor</dt><dd class="col-sm-8">@Model.NamaPendonor</dd>
+        <dt class="col-sm-4">Tanggal Donor</dt><dd class="col-sm-8">@Model.TanggalDonor.ToString("dd MMMM yyyy")</dd>
+        <dt class="col-sm-4">Lokasi</dt><dd class="col-sm-8">@Model.LokasiDonor</dd>
+        <dt class="col-sm-4">Golongan Darah</dt><dd class="col-sm-8">@Model.GolonganDarah@Model.Rhesus</dd>
+        <dt class="col-sm-4">Jumlah Darah</dt><dd class="col-sm-8">@Model.JumlahDarahMl ml</dd>
+        <dt class="col-sm-4">Catatan</dt><dd class="col-sm-8">@(Model.CatatanTambahan ?? "-")</dd>
+        <dt class="col-sm-4">Status</dt><dd class="col-sm-8"><span class="bc-badge bc-badge-success">@Model.Status</span></dd>
+        <dt class="col-sm-4">Diinput Oleh</dt><dd class="col-sm-8">@(Model.PetugasNama ?? "-") &middot; @Model.WaktuInput.ToString("dd MMM yyyy HH:mm")</dd>
+    </dl>
+    <a asp-action="Index" class="bc-btn-edit d-inline-block mt-3">&larr; Kembali</a>
+</div>

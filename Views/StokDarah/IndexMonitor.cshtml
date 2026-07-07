@@ -1,0 +1,124 @@
+@model IEnumerable<BloodCare.Models.StokDarah>
+
+@{
+    ViewData["Title"] = "Stok Darah";
+    var permintaanDarurat = ViewBag.PermintaanDarurat as IEnumerable<BloodCare.Models.PermintaanDarah>;
+
+    var kombinasi = new[]
+    {
+        new { Gol = "A",  Rh = "+" }, new { Gol = "A",  Rh = "-" },
+        new { Gol = "B",  Rh = "+" }, new { Gol = "B",  Rh = "-" },
+        new { Gol = "AB", Rh = "+" }, new { Gol = "AB", Rh = "-" },
+        new { Gol = "O",  Rh = "+" }, new { Gol = "O",  Rh = "-" },
+    };
+}
+
+<!-- PAGE HERO -->
+<div class="bc-hero mb-4">
+    <div>
+        <h2 style="font-size:1.7rem;font-weight:800;margin-bottom:6px">Stok Darah</h2>
+        <p style="opacity:0.88;font-size:0.92rem;max-width:560px">
+            Informasi stok darah terkini yang tersedia di sistem.
+        </p>
+    </div>
+</div>
+
+<!-- 8 KARTU GOLONGAN + RHESUS -->
+<div class="bc-stat-grid mb-4">
+    @foreach (var k in kombinasi)
+    {
+        var item = Model.FirstOrDefault(s => s.GolonganDarah == k.Gol && s.Rhesus == k.Rh);
+        int jumlah = item?.JumlahKantong ?? 0;
+
+        string statusLabel = jumlah == 0 ? "Kosong" : jumlah < 20 ? "Menipis" : "Tersedia";
+        string statusClass = jumlah == 0 ? "bc-badge-danger" : jumlah < 20 ? "bc-badge-warning" : "bc-badge-success";
+
+        string updateText = "Belum ada data";
+        if (item != null)
+        {
+            var selisih = DateTime.Now - item.TerakhirDiperbarui;
+            updateText = selisih.TotalMinutes < 1 ? "Baru saja"
+                       : selisih.TotalMinutes < 60 ? $"{(int)selisih.TotalMinutes} Menit yang lalu"
+                       : selisih.TotalHours < 24 ? $"{(int)selisih.TotalHours} Jam yang lalu"
+                       : $"{(int)selisih.TotalDays} Hari yang lalu";
+        }
+
+        <div class="bc-stat-card">
+            <div class="bc-stat-value" style="font-size:1.8rem;color:#c0392b">@k.Gol@k.Rh</div>
+            <div class="bc-stat-label">Golongan Darah</div>
+            <div style="font-size:1.6rem;font-weight:800;margin:6px 0">
+                @jumlah <small style="font-size:0.9rem;font-weight:500;color:#7f8c8d">Kantong</small>
+            </div>
+            <span class="bc-badge @statusClass">@statusLabel</span>
+            <div style="font-size:0.75rem;color:#95a5a6;margin-top:8px">
+                <i class="fa fa-clock"></i> Update: @updateText
+            </div>
+        </div>
+    }
+</div>
+
+<div style="background:#f4f5f7;border-radius:10px;padding:14px 18px;display:flex;gap:10px;align-items:flex-start;margin-bottom:24px;font-size:0.85rem;color:#555">
+    <i class="fa fa-info-circle" style="color:#c0392b;margin-top:2px"></i>
+    <span>Stok darah diperbarui otomatis setiap kali data riwayat donor baru diinput melalui portal petugas.</span>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-7">
+        <div class="bc-card">
+            <div class="bc-card-header">
+                <span class="bc-card-title" style="font-weight:700">Ringkasan Stok</span>
+            </div>
+            <div style="padding:18px 22px;display:flex;gap:24px;flex-wrap:wrap">
+                <div>
+                    <div style="font-size:0.78rem;color:#95a5a6">TOTAL KESELURUHAN</div>
+                    <div style="font-size:1.4rem;font-weight:800">@ViewBag.TotalKantong Kantong</div>
+                </div>
+                <div>
+                    <div style="font-size:0.78rem;color:#95a5a6">JENIS STOK KRITIS (&lt; 10)</div>
+                    <div style="font-size:1.4rem;font-weight:800;color:#c0392b">@ViewBag.StokKritis</div>
+                </div>
+                <div>
+                    <div style="font-size:0.78rem;color:#95a5a6">JENIS TERDAFTAR</div>
+                    <div style="font-size:1.4rem;font-weight:800">@ViewBag.TotalJenis</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Permintaan Darurat -->
+    <div class="col-lg-5">
+        <div class="bc-card">
+            <div class="bc-card-header">
+                <span class="bc-card-title" style="font-weight:700">Permintaan Darurat</span>
+            </div>
+            <div style="padding:14px 18px">
+                @if (permintaanDarurat != null && permintaanDarurat.Any())
+                {
+                    foreach (var p in permintaanDarurat)
+                    {
+                        <div style="display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid #f0f0f0">
+                            <div style="width:36px;height:36px;border-radius:50%;background:#c0392b;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem;flex-shrink:0">
+                                @p.GolonganDarah@p.Rhesus
+                            </div>
+                            <div style="flex:1">
+                                <div style="font-weight:700;font-size:0.85rem">@p.RumahSakit</div>
+                                <div style="font-size:0.78rem;color:#7f8c8d">Dibutuhkan: @p.JumlahKebutuhan kantong</div>
+                            </div>
+                            <i class="fa fa-exclamation-circle" style="color:#c0392b"></i>
+                        </div>
+                    }
+                    <a asp-controller="PermintaanDarah" asp-action="Index"
+                       style="display:block;text-align:center;margin-top:14px;background:#fff;color:#c0392b;border:1.5px solid #c0392b;border-radius:8px;padding:9px;font-weight:600;font-size:0.85rem;text-decoration:none">
+                        Lihat Semua Permintaan
+                    </a>
+                }
+                else
+                {
+                    <div style="text-align:center;padding:20px;color:#95a5a6;font-size:0.85rem">
+                        Tidak ada permintaan darurat saat ini
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

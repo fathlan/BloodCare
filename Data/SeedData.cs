@@ -64,6 +64,48 @@ namespace BloodCare.Data
                     await userManager.AddToRoleAsync(petugasUser, "Petugas");
                 }
             }
+            //    Buat akun Pendonor demo kalau belum ada, lengkap dengan
+            //    data master Pendonor yang terhubung (IdPendonor) supaya semua fitur
+            //    Pendonor (Jadwal Saya, Riwayat Donor Saya) langsung bisa dites.
+            string pendonorEmail = "pendonor@bloodcare.com";
+            string pendonorPassword = "Pendonor@123";
+
+            var pendonorUser = await userManager.FindByEmailAsync(pendonorEmail);
+            if (pendonorUser == null)
+            {
+                var context = serviceProvider.GetRequiredService<ApplicationDbContext>();
+
+                var pendonorData = new Pendonor
+                {
+                    NamaLengkap = "Budi Santoso",
+                    Umur = 28,
+                    JenisKelamin = "Laki-laki",
+                    GolonganDarah = "O",
+                    Rhesus = "+",
+                    Alamat = "Jl. Contoh No. 1, Jakarta",
+                    NoHp = "081234567890",
+                    Email = pendonorEmail,
+                    TanggalDaftar = DateTime.Now,
+                    Status = "Aktif"
+                };
+                context.Pendonors.Add(pendonorData);
+                await context.SaveChangesAsync();
+
+                pendonorUser = new ApplicationUser
+                {
+                    UserName = pendonorEmail,
+                    Email = pendonorEmail,
+                    FullName = "Budi Santoso",
+                    EmailConfirmed = true,
+                    IdPendonor = pendonorData.Id
+                };
+
+                var result = await userManager.CreateAsync(pendonorUser, pendonorPassword);
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(pendonorUser, "Pendonor");
+                }
+            }
         }
     }
 }

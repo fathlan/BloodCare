@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace BloodCare.Controllers
 {
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Petugas")]
     public class PermintaanDarahController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -84,10 +84,39 @@ namespace BloodCare.Controllers
         {
             if (id != permintaan.Id) return NotFound();
 
+            var existing = await _context.PermintaanDarahs.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
+            if (existing == null) return NotFound();
+
+            StokDarah? stok = null;
+
+            // === Proses bisnis: status hanya boleh berubah jadi "Selesai" kalau stok cukup ===
+            if (permintaan.Status == "Selesai" && existing.Status != "Selesai")
+            {
+                stok = await _context.StokDarahs.FirstOrDefaultAsync(s =>
+                    s.GolonganDarah == permintaan.GolonganDarah && s.Rhesus == permintaan.Rhesus);
+
+                int stokTersedia = stok?.JumlahKantong ?? 0;
+
+                if (stokTersedia < permintaan.JumlahKebutuhan)
+                {
+                    ModelState.AddModelError("Status",
+                        $"Stok darah {permintaan.GolonganDarah}{permintaan.Rhesus} tidak mencukupi " +
+                        $"(tersedia {stokTersedia} kantong, dibutuhkan {permintaan.JumlahKebutuhan} kantong). " +
+                        "Status tidak bisa diubah menjadi Selesai sebelum stok mencukupi.");
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 try
                 {
+                    // Stok cukup & status baru saja jadi Selesai -> darah dianggap terdistribusi, kurangi stok
+                    if (stok != null)
+                    {
+                        stok.JumlahKantong -= permintaan.JumlahKebutuhan;
+                        stok.TerakhirDiperbarui = DateTime.Now;
+                    }
+
                     _context.Update(permintaan);
                     await _context.SaveChangesAsync();
                     TempData["SweetSuccess"] = "Permintaan darah berhasil diperbarui!";

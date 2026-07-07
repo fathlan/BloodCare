@@ -1,0 +1,144 @@
+@{
+    ViewData["Title"] = "Dashboard Petugas";
+    var kegiatan = ViewBag.KegiatanHariIni as IEnumerable<BloodCare.Models.JadwalDonor>;
+    var pemberitahuan = ViewBag.PemberitahuanSistem as IEnumerable<dynamic>;
+    bool tampilTerdekat = (bool)(ViewBag.MenampilkanJadwalTerdekat ?? false);
+    var today = DateTime.Today;
+}
+
+<!-- HERO BANNER -->
+<div class="bc-hero mb-4">
+    <div>
+        <h2 style="font-size:1.7rem;font-weight:800;margin-bottom:6px">
+            Selamat Datang, @ViewBag.NamaUser
+        </h2>
+        <p style="opacity:0.88;font-size:0.92rem;max-width:560px">
+            Pantau dan kelola data donor darah di lapangan secara real-time untuk efisiensi
+            ketersediaan stok darah nasional.
+        </p>
+    </div>
+</div>
+
+<!-- STAT CARDS -->
+<div class="bc-stat-grid mb-4">
+    <div class="bc-stat-card">
+        <div class="bc-stat-icon red"><i class="fa fa-calendar"></i></div>
+        <div class="bc-stat-label">Kegiatan Donor Hari Ini</div>
+        <div class="bc-stat-value">@ViewBag.JumlahLokasiAktif</div>
+        <div class="bc-stat-sub info"><i class="fa fa-map-marker-alt"></i> Lokasi aktif hari ini</div>
+    </div>
+
+    <div class="bc-stat-card">
+        <div class="bc-stat-icon blue"><i class="fa fa-file-medical"></i></div>
+        <div class="bc-stat-label">Total Riwayat Diinput</div>
+        <div class="bc-stat-value">@ViewBag.TotalRiwayatBulanIni</div>
+        <div class="bc-stat-sub info"><i class="fa fa-clock"></i> Bulan ini</div>
+    </div>
+
+    <div class="bc-stat-card">
+        <div class="bc-stat-icon orange"><i class="fa fa-tint"></i></div>
+        <div class="bc-stat-label">Stok Darah Terkini</div>
+        <div class="bc-stat-value">
+            @ViewBag.TotalStokTerkini
+            <small style="font-size:1rem;font-weight:500;color:#7f8c8d"> Kantong</small>
+        </div>
+        <div class="bc-stat-sub up"><i class="fa fa-check-circle"></i> Siap distribusi</div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <!-- Kegiatan Donor Hari Ini -->
+    <div class="col-lg-7">
+        <div class="bc-card mb-3">
+            <div class="bc-card-header">
+                <span class="bc-card-title" style="font-size:1.05rem;font-weight:700">
+                    @(tampilTerdekat ? "Jadwal Donor Terdekat" : "Kegiatan Donor Hari Ini")
+                </span>
+                <a asp-controller="JadwalDonor" asp-action="Index" class="bc-card-link">Lihat Semua &rarr;</a>
+            </div>
+            <table class="bc-table">
+                <thead>
+                    <tr>
+                        <th>Lokasi</th>
+                        <th>Tanggal</th>
+                        <th>Kuota</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (kegiatan != null && kegiatan.Any())
+                    {
+                        foreach (var j in kegiatan)
+                        {
+                            string status = j.Tanggal.Date == today ? "Berlangsung"
+                                          : j.Tanggal.Date > today ? "Persiapan"
+                                          : "Selesai";
+                            string badge = status switch
+                            {
+                                "Berlangsung" => "bc-badge-success",
+                                "Persiapan"   => "bc-badge-warning",
+                                _             => "bc-badge-secondary"
+                            };
+
+                            <tr>
+                                <td>
+                                    <div class="bc-tbl-name">@j.Lokasi</div>
+                                    @if (!string.IsNullOrEmpty(j.Keterangan))
+                                    {
+                                        <div class="bc-tbl-sub">@j.Keterangan</div>
+                                    }
+                                </td>
+                                <td style="font-size:0.82rem">@j.Tanggal.ToString("dd MMM yyyy")</td>
+                                <td style="font-weight:600">@j.Kuota orang</td>
+                                <td><span class="bc-badge @badge">@status</span></td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" style="text-align:center;padding:32px;color:#95a5a6">
+                                Belum ada kegiatan donor terjadwal
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Kolom Kanan -->
+    <div class="col-lg-5">
+        <!-- Pemberitahuan Sistem -->
+        <div class="bc-card mb-3">
+            <div class="bc-card-header">
+                <span class="bc-card-title" style="font-weight:700">Pemberitahuan Sistem</span>
+            </div>
+            <div style="padding:16px 20px">
+                @if (pemberitahuan != null && pemberitahuan.Any())
+                {
+                    foreach (var p in pemberitahuan)
+                    {
+                        bool urgent = (bool)p.Urgent;
+                        <div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #f0f0f0">
+                            <div style="width:34px;height:34px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;
+                                        background:@(urgent ? "#fdecea" : "#eaf2fb");color:@(urgent ? "#c0392b" : "#2471a3")">
+                                <i class="fa @(urgent ? "fa-exclamation-triangle" : "fa-info-circle")"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight:700;font-size:0.87rem">@p.Judul</div>
+                                <div style="font-size:0.8rem;color:#7f8c8d;margin-top:2px">@p.Pesan</div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div style="text-align:center;padding:20px;color:#95a5a6;font-size:0.85rem">
+                        Tidak ada pemberitahuan baru
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

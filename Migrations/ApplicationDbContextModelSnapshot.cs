@@ -158,6 +158,67 @@ namespace BloodCare.Migrations
                     b.ToTable("JadwalDonors");
                 });
 
+            modelBuilder.Entity("BloodCare.Models.NotifikasiDibaca", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("NotifId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("WaktuDibaca")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("NotifikasiDibacas");
+                });
+
+            modelBuilder.Entity("BloodCare.Models.PendaftaranJadwal", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("JadwalDonorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NamaPendonor")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PendonorUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PetugasId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StatusKehadiran")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("TanggalDaftar")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("WaktuVerifikasi")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PendaftaranJadwals");
+                });
+
             modelBuilder.Entity("BloodCare.Models.Pendonor", b =>
                 {
                     b.Property<int>("Id")
@@ -170,6 +231,12 @@ namespace BloodCare.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("DonorTerakhir")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("GolonganDarah")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -178,11 +245,14 @@ namespace BloodCare.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Nama")
+                    b.Property<string>("Keterangan")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NamaLengkap")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NoHP")
+                    b.Property<string>("NoHp")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -190,7 +260,14 @@ namespace BloodCare.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("TanggalDonorTerakhir")
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("TanggalDaftar")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("TanggalLahir")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Umur")
@@ -240,6 +317,63 @@ namespace BloodCare.Migrations
                     b.ToTable("PermintaanDarahs");
                 });
 
+            modelBuilder.Entity("BloodCare.Models.RiwayatDonor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CatatanTambahan")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GolonganDarah")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("JadwalDonorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("JumlahDarahMl")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LokasiDonor")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NamaPendonor")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PendonorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PetugasId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PetugasNama")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Rhesus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("TanggalDonor")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("WaktuInput")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RiwayatDonors");
+                });
+
             modelBuilder.Entity("BloodCare.Models.StokDarah", b =>
                 {
                     b.Property<int>("Id")
@@ -255,14 +389,17 @@ namespace BloodCare.Migrations
                     b.Property<int>("JumlahKantong")
                         .HasColumnType("int");
 
+                    b.Property<string>("Keterangan")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Rhesus")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("TanggalKadaluarsa")
+                    b.Property<DateTime?>("TanggalKadaluarsa")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("TanggalMasuk")
+                    b.Property<DateTime>("TerakhirDiperbarui")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");

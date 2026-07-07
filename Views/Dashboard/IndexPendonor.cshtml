@@ -1,0 +1,78 @@
+@{
+    ViewData["Title"] = "Dashboard Saya";
+    var jadwalSaya = ViewBag.JadwalSayaMendatang as IEnumerable<BloodCare.Models.JadwalDonor>;
+    var jadwalUmum = ViewBag.JadwalTerdekatUmum as IEnumerable<BloodCare.Models.JadwalDonor>;
+    DateTime? donorTerakhir = ViewBag.DonorTerakhir;
+}
+
+<div class="bc-hero mb-4">
+    <div>
+        <h2 style="font-size:1.7rem;font-weight:800;margin-bottom:6px">Selamat Datang, @ViewBag.NamaUser</h2>
+        <p style="opacity:0.88;font-size:0.92rem">Terima kasih sudah jadi bagian dari BloodCare. Setiap donor Anda berarti bagi mereka yang membutuhkan.</p>
+    </div>
+</div>
+
+<div class="bc-stat-grid mb-4">
+    <div class="bc-stat-card">
+        <div class="bc-stat-icon red"><i class="fa fa-tint"></i></div>
+        <div class="bc-stat-label">Total Donor Saya</div>
+        <div class="bc-stat-value">@ViewBag.TotalDonorSaya</div>
+        <div class="bc-stat-sub info">kali donor tercatat</div>
+    </div>
+    <div class="bc-stat-card">
+        <div class="bc-stat-icon blue"><i class="fa fa-calendar-check"></i></div>
+        <div class="bc-stat-label">Donor Terakhir</div>
+        <div class="bc-stat-value" style="font-size:1.1rem">@(donorTerakhir.HasValue ? donorTerakhir.Value.ToString("dd MMM yyyy") : "Belum Ada")</div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-7">
+        <div class="bc-card mb-3">
+            <div class="bc-card-header">
+                <span class="bc-card-title" style="font-weight:700">Jadwal Donor yang Saya Ikuti</span>
+                <a asp-controller="PendaftaranJadwal" asp-action="MyIndex" class="bc-card-link">Lihat Semua &rarr;</a>
+            </div>
+            <table class="bc-table">
+                <tbody>
+                    @if (jadwalSaya != null && jadwalSaya.Any())
+                    {
+                        foreach (var j in jadwalSaya)
+                        {
+                            <tr><td class="bc-tbl-name">@j.Lokasi</td><td style="font-size:0.82rem">@j.Tanggal.ToString("dd MMM yyyy")</td></tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td style="text-align:center;padding:24px;color:#95a5a6">Anda belum mendaftar ke jadwal donor manapun.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="bc-card mb-3">
+            <div class="bc-card-header">
+                <span class="bc-card-title" style="font-weight:700">Jadwal Donor Terdekat</span>
+                <a asp-controller="JadwalDonor" asp-action="Index" class="bc-card-link">Semua &rarr;</a>
+            </div>
+            <table class="bc-table">
+                <tbody>
+                    @if (jadwalUmum != null && jadwalUmum.Any())
+                    {
+                        foreach (var j in jadwalUmum)
+                        {
+                            <tr><td class="bc-tbl-name">@j.Lokasi</td><td style="font-size:0.82rem">@j.Tanggal.ToString("dd MMM")</td></tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="bc-card" style="padding:18px">
+            <a asp-controller="RiwayatDonor" asp-action="Index" class="bc-hero-btn" style="display:block;text-align:center;text-decoration:none">
+                <i class="fa fa-history"></i> Lihat Riwayat Donor Saya
+            </a>
+        </div>
+    </div>
+</div>

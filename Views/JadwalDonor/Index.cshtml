@@ -1,10 +1,10 @@
-@model IEnumerable<BloodCare.Models.JadwalDonor>
+@model IEnumerable<BloodCare.ViewModels.JadwalDonorViewModel>
 
 @{
     ViewData["Title"] = "Jadwal Donor";
     int totalJadwal = Model.Count();
-    int jadwalAktif = Model.Count(j => j.Tanggal >= DateTime.Today);
-    int totalPeserta = 0; // bisa dihubungkan ke tabel pendaftaran nanti
+    int jadwalAktif = Model.Count(vm => vm.Jadwal.Tanggal >= DateTime.Today);
+    int totalPeserta = Model.Sum(vm => vm.JumlahTerdaftar);
 }
 
 <!-- PAGE HERO -->
@@ -37,9 +37,9 @@
     <div class="bc-mini-stat">
         <div class="bc-mini-stat-icon orange"><i class="fa fa-users"></i></div>
         <div>
-            <div class="bc-mini-stat-val">@Model.Sum(j => j.Kuota)</div>
-            <div class="bc-mini-stat-lbl">TOTAL PESERTA</div>
-            <div class="bc-mini-stat-sub" style="color:#7f8c8d">↑ 45 menunggu konfirmasi</div>
+            <div class="bc-mini-stat-val">@totalPeserta</div>
+            <div class="bc-mini-stat-lbl">TOTAL PESERTA TERDAFTAR</div>
+            <div class="bc-mini-stat-sub" style="color:#7f8c8d">dari seluruh jadwal</div>
         </div>
     </div>
 </div>
@@ -64,15 +64,15 @@
             {
                 <tr><td colspan="8" style="text-align:center;padding:32px;color:#95a5a6">Belum ada jadwal donor</td></tr>
             }
-            @foreach (var item in Model)
+            @foreach (var vm in Model)
             {
+                var item = vm.Jadwal;
                 bool isAktif = item.Tanggal >= DateTime.Today;
-                bool isSudah = item.Tanggal < DateTime.Today;
                 string statusBadge = isAktif ? "bc-badge-success" : "bc-badge-secondary";
                 string statusTeks  = isAktif ? "Aktif" : "Selesai";
-                // Progress bar simulasi (tanpa tabel pendaftaran, tampilkan 0/kuota)
-                int terdaftar = 0;
-                int pct = item.Kuota > 0 ? (int)((double)terdaftar / item.Kuota * 100) : 0;
+
+                int terdaftar = vm.JumlahTerdaftar;
+                int pct = item.Kuota > 0 ? (int)Math.Min(100, (double)terdaftar / item.Kuota * 100) : 0;
                 string fillClass = pct >= 90 ? "warn" : pct >= 50 ? "" : "ok";
 
                 <tr>

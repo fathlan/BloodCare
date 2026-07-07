@@ -1,3 +1,4 @@
+@model BloodCare.ViewModels.LandingPageViewModel
 @{
     Layout = null;
 }
@@ -333,12 +334,10 @@
 
     <!-- NAVBAR -->
     <nav class="navbar">
-        <div class="logo"><span class="drop">🩸</span> BloodCare</div>
+        <div class="logo"><span class="drop"></span> BloodCare</div>
         <div class="nav-links">
             <a href="#home" class="active">Home</a>
-            <a href="#tentang">Tentang Kami</a>
-            <a href="#stok">Stok Darah</a>
-            <a href="#kontak">Kontak</a>
+            <a asp-controller="JadwalDonor" asp-action="Index">Jadwal Donor</a>
         </div>
         <div class="nav-actions">
             <a href="/Auth/Login" class="btn-login">Login</a>
@@ -350,17 +349,17 @@
     <section class="hero" id="home">
         <div class="hero-grid">
             <div>
-                <span class="badge">🛡️ Sistem Manajemen Darah Terpercaya</span>
+                <span class="badge">Sistem Manajemen Darah Terpercaya</span>
                 <h1>Setetes Darah Anda,<span class="red">Nyawa Bagi Mereka.</span></h1>
                 <p class="desc">BloodCare hadir untuk menjembatani antara pendonor dan mereka yang membutuhkan. Mari berbagi kehidupan melalui langkah sederhana namun bermakna.</p>
                 <div class="hero-buttons">
                     <a href="/Auth/Register"><button class="btn-primary">Mulai Donor Sekarang &gt;</button></a>
-                    <a href="#stok"><button class="btn-outline">Cari Stok Darah</button></a>
+                    <a asp-controller="JadwalDonor" asp-action="Index"><button class="btn-outline">Lihat Jadwal Donor</button></a>
                 </div>
                 <div class="stats">
-                    <div class="stat"><h3>12k+</h3><p>Pendonor Aktif</p></div>
-                    <div class="stat"><h3>45+</h3><p>Rumah Sakit</p></div>
-                    <div class="stat"><h3>8.4k</h3><p>Kantong Tersalurkan</p></div>
+                    <div class="stat"><h3>@Model.TotalPendonorAktif</h3><p>Pendonor Aktif</p></div>
+                    <div class="stat"><h3>@Model.TotalJadwalAktif</h3><p>Jadwal Donor Aktif</p></div>
+                    <div class="stat"><h3>@Model.TotalKantongTersalurkan</h3><p>Kantong Tersalurkan</p></div>
                 </div>
             </div>
 
@@ -370,37 +369,22 @@
                     <span class="live-badge"><span class="live-dot"></span> Real-time</span>
                 </div>
 
-                <div class="stock-row">
-                    <div class="stock-icon">A</div>
-                    <div class="stock-info">
-                        <div class="stock-info-top"><span>Golongan A</span><span>75 Kantong</span></div>
-                        <div class="progress-bg"><div class="progress-fill" style="width:75%"></div></div>
+                @foreach (var stok in Model.StokPerGolongan)
+                {
+                    <div class="stock-row">
+                        <div class="stock-icon">@stok.Golongan</div>
+                        <div class="stock-info">
+                            <div class="stock-info-top">
+                                <span>Golongan @stok.Golongan</span>
+                                <span>@stok.JumlahKantong Kantong</span>
+                            </div>
+                            <div class="progress-bg"><div class="progress-fill" style="width:@(stok.Persen)%"></div></div>
+                        </div>
                     </div>
-                </div>
-                <div class="stock-row">
-                    <div class="stock-icon">B</div>
-                    <div class="stock-info">
-                        <div class="stock-info-top"><span>Golongan B</span><span>42 Kantong</span></div>
-                        <div class="progress-bg"><div class="progress-fill" style="width:42%"></div></div>
-                    </div>
-                </div>
-                <div class="stock-row">
-                    <div class="stock-icon">AB</div>
-                    <div class="stock-info">
-                        <div class="stock-info-top"><span>Golongan AB</span><span class="mendesak">Mendesak</span></div>
-                        <div class="progress-bg"><div class="progress-fill" style="width:15%"></div></div>
-                    </div>
-                </div>
-                <div class="stock-row">
-                    <div class="stock-icon">O</div>
-                    <div class="stock-info">
-                        <div class="stock-info-top"><span>Golongan O</span><span>120 Kantong</span></div>
-                        <div class="progress-bg"><div class="progress-fill" style="width:95%"></div></div>
-                    </div>
-                </div>
+                }
 
                 <div class="stock-card-footer">
-                    <a href="/Auth/Login">Lihat Detail Selengkapnya</a>
+                    <a asp-controller="JadwalDonor" asp-action="Index">Lihat Jadwal Donor Selengkapnya</a>
                 </div>
             </div>
         </div>
@@ -421,18 +405,18 @@
 
             <div class="why-right">
                 <div class="card-feature blue">
-                    <div class="icon-box">🏆</div>
+                    <div class="icon-box"></div>
                     <h4>Program Loyalitas</h4>
                     <p>Dapatkan poin dari setiap donor yang Anda lakukan dan tukarkan dengan berbagai benefit menarik dari mitra kami.</p>
                 </div>
                 <div class="small-row">
                     <div class="card-small light">
-                        <div class="icon-box">🕐</div>
+                        <div class="icon-box"></div>
                         <h4>Reservasi Mudah</h4>
                         <p>Pilih jadwal dan lokasi donor favorit Anda hanya dalam beberapa klik.</p>
                     </div>
                     <div class="card-small dark">
-                        <div class="icon-box">🛡️</div>
+                        <div class="icon-box"></div>
                         <h4>Skrining Kesehatan</h4>
                         <p>Riwayat kesehatan digital yang membantu Anda memantau kondisi tubuh setelah mendonor.</p>
                     </div>
@@ -459,7 +443,7 @@
     <footer id="kontak">
         <div class="footer-grid">
             <div>
-                <div class="footer-logo">🩸 BloodCare</div>
+                <div class="footer-logo">BloodCare</div>
                 <p>Platform manajemen donor darah modern yang fokus pada keamanan data, ketersediaan stok, dan kemudahan akses bagi seluruh masyarakat Indonesia.</p>
             </div>
             <div class="footer-col">
@@ -477,9 +461,7 @@
                 <a href="#kontak">Kontak</a>
             </div>
             <div class="social-icons">
-                <span>📍</span>
-                <span>📷</span>
-                <span>▪️</span>
+               
             </div>
         </div>
         <div class="footer-bottom">

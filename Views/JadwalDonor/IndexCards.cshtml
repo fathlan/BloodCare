@@ -1,0 +1,102 @@
+@model IEnumerable<BloodCare.ViewModels.JadwalDonorViewModel>
+
+@{
+    ViewData["Title"] = "Jadwal Donor";
+    var today = DateTime.Today;
+
+    // User belum login  pakai layout publik tanpa sidebar admin
+    // User sudah login pakai layout dengan sidebar
+    Layout = User.Identity!.IsAuthenticated ? "_Layout" : "_PublicLayout";
+}
+
+<!-- PAGE HERO -->
+<div class="bc-hero mb-4">
+    <div>
+        <h2 style="font-size:1.7rem;font-weight:800;margin-bottom:6px">Jadwal Donor</h2>
+        <p style="opacity:0.88;font-size:0.92rem;max-width:560px">
+            Lihat daftar kegiatan donor darah yang tersedia.
+        </p>
+    </div>
+</div>
+
+<div class="row g-3">
+    @if (!Model.Any())
+    {
+        <div class="col-12">
+            <div class="bc-card" style="text-align:center;padding:40px;color:#95a5a6">
+                Belum ada jadwal donor yang tersedia.
+            </div>
+        </div>
+    }
+    @foreach (var vm in Model)
+    {
+        var item = vm.Jadwal;
+        bool isAktif = item.Tanggal.Date >= today;
+        bool kuotaPenuh = vm.JumlahTerdaftar >= item.Kuota;
+        int pct = item.Kuota > 0 ? (int)Math.Min(100, (double)vm.JumlahTerdaftar / item.Kuota * 100) : 0;
+
+        string statusBadge = isAktif ? "bc-badge-success" : "bc-badge-secondary";
+        string statusTeks  = isAktif ? "Aktif" : "Selesai";
+
+        <div class="col-md-6 col-lg-4">
+            <div class="bc-card h-100" style="padding:20px">
+                <span class="bc-badge @statusBadge" style="margin-bottom:10px;display:inline-block">&#9679; @statusTeks</span>
+                <div style="font-weight:800;font-size:1.05rem;margin-bottom:10px">@item.Lokasi</div>
+
+                <div style="font-size:0.85rem;color:#555;margin-bottom:6px">
+                    <i class="fa fa-calendar" style="width:16px;color:#c0392b"></i>
+                    @item.Tanggal.ToString("dddd, dd MMM yyyy")
+                </div>
+                <div style="font-size:0.85rem;color:#555;margin-bottom:14px">
+                    <i class="fa fa-map-marker-alt" style="width:16px;color:#c0392b"></i>
+                    @item.Lokasi
+                </div>
+
+                @if (!string.IsNullOrEmpty(item.Keterangan))
+                {
+                    <div style="font-size:0.8rem;color:#7f8c8d;margin-bottom:14px">@item.Keterangan</div>
+                }
+
+                <div style="display:flex;justify-content:space-between;font-size:0.8rem;color:#555;margin-bottom:4px">
+                    <span>Kuota Kegiatan</span>
+                    <strong>@vm.JumlahTerdaftar/@item.Kuota Orang</strong>
+                </div>
+                <div class="bc-progress">
+                    <div class="bc-progress-fill @(kuotaPenuh ? "warn" : "")" style="width:@pct%"></div>
+                </div>
+
+                @if (User.IsInRole("Pendonor") && isAktif)
+                {
+                    @if (vm.SudahDaftar)
+                    {
+                        <div class="mt-3" style="text-align:center;color:#27ae60;font-weight:600">
+                            <i class="fa fa-check-circle"></i> Anda sudah terdaftar
+                        </div>
+                    }
+                    else if (kuotaPenuh)
+                    {
+                        <button class="bc-hero-btn" style="width:100%;opacity:0.5" disabled>
+                            Kuota Penuh
+                        </button>
+                    }
+                    else
+                    {
+                        <form asp-controller="PendaftaranJadwal" asp-action="Daftar" method="post" class="mt-3">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="jadwalDonorId" value="@item.Id" />
+                            <button type="submit" class="bc-hero-btn" style="width:100%;justify-content:center;display:flex;align-items:center;gap:6px">
+                                <i class="fa fa-user-plus"></i> Daftar Jadwal Ini
+                            </button>
+                        </form>
+                    }
+                }
+                else if (!User.Identity!.IsAuthenticated && isAktif)
+                {
+                    <a asp-controller="Auth" asp-action="Login" class="bc-btn-edit mt-3" style="display:block;text-align:center;text-decoration:none">
+                        Login untuk Mendaftar
+                    </a>
+                }
+            </div>
+        </div>
+    }
+</div>

@@ -1,3 +1,4 @@
+using BloodCare.Data;
 using BloodCare.Models;
 using BloodCare.Services;
 using BloodCare.ViewModels;
@@ -11,15 +12,18 @@ namespace BloodCare.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IAuditService _auditService;
+        private readonly ApplicationDbContext _context;
 
         public AuthController(
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
-            IAuditService auditService)
+            IAuditService auditService,
+            ApplicationDbContext context)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _auditService = auditService;
+            _context = context;
         }
 
         [HttpGet]
@@ -105,6 +109,31 @@ namespace BloodCare.Controllers
             {
                 // Semua yang daftar lewat form publik otomatis jadi "Pendonor"
                 await _userManager.AddToRoleAsync(user, "Pendonor");
+
+                // Buat juga data master Pendonor (UC001: "data pendukung lainnya")
+                // dan hubungkan ke akun lewat ApplicationUser.IdPendonor supaya
+                // fitur "Riwayat Donor Saya" & "Mendaftar Jadwal Donor" bisa jalan.
+                var pendonor = new Pendonor
+                {
+                    NamaLengkap = model.FullName,
+                    Umur = model.Umur,
+                    JenisKelamin = model.JenisKelamin,
+                    GolonganDarah = model.GolonganDarah,
+                    Rhesus = model.Rhesus,
+                    Alamat = model.Alamat,
+                    NoHp = model.NoHp,
+                    Email = model.Email,
+                    TanggalLahir = model.TanggalLahir,
+                    TanggalDaftar = DateTime.Now,
+                    Status = "Aktif"
+                };
+                _context.Pendonors.Add(pendonor);
+                await _context.SaveChangesAsync();
+
+                user.IdPendonor = pendonor.Id;
+                user.PhoneNumber = model.NoHp;
+                await _userManager.UpdateAsync(user);
+
                 await _auditService.LogAsync(user.Id, user.UserName, "Register", "AspNetUsers", user.Id);
 
                 await _signInManager.SignInAsync(user, isPersistent: false);

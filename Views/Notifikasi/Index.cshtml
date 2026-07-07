@@ -1,0 +1,172 @@
+@model IEnumerable<BloodCare.Controllers.NotifItem>
+
+@{
+    ViewData["Title"] = "Notifikasi";
+    string activeTab = Context.Request.Query["tab"].ToString();
+    if (string.IsNullOrEmpty(activeTab)) activeTab = "semua";
+
+    var filtered = activeTab switch
+    {
+        "belum" => Model.Where(n => !n.IsRead),
+        "penting" => Model.Where(n => n.IsUrgent),
+        _ => Model
+    };
+}
+
+<!-- PAGE HERO -->
+<div class="bc-hero mb-4" style="position:relative;overflow:hidden">
+    <div style="position:relative;z-index:1">
+        <h2 style="font-size:2rem;font-weight:800;margin-bottom:8px">Notifikasi</h2>
+        <p style="opacity:0.88;font-size:0.92rem;max-width:520px">
+            Pantau pemberitahuan penting seputar sistem BloodCare secara real-time untuk efisiensi layanan donor darah.
+        </p>
+    </div>
+</div>
+
+<!-- TAB + TANDAI SEMUA -->
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+    <div style="display:flex;gap:8px">
+        <a href="?tab=semua"
+           style="padding:8px 20px;border-radius:20px;font-size:0.85rem;font-weight:600;text-decoration:none;
+                  background:@(activeTab=="semua" ? "#c0392b" : "#fff");
+                  color:@(activeTab=="semua" ? "#fff" : "#555");
+                  border:1.5px solid @(activeTab=="semua" ? "#c0392b" : "#dde0e7")">
+            Semua
+        </a>
+        <a href="?tab=belum"
+           style="padding:8px 20px;border-radius:20px;font-size:0.85rem;font-weight:600;text-decoration:none;
+                  background:@(activeTab=="belum" ? "#c0392b" : "#fff");
+                  color:@(activeTab=="belum" ? "#fff" : "#555");
+                  border:1.5px solid @(activeTab=="belum" ? "#c0392b" : "#dde0e7")">
+            Belum Dibaca
+        </a>
+        <a href="?tab=penting"
+           style="padding:8px 20px;border-radius:20px;font-size:0.85rem;font-weight:600;text-decoration:none;
+                  background:@(activeTab=="penting" ? "#c0392b" : "#fff");
+                  color:@(activeTab=="penting" ? "#fff" : "#555");
+                  border:1.5px solid @(activeTab=="penting" ? "#c0392b" : "#dde0e7")">
+            Penting
+        </a>
+    </div>
+    <a href="#" id="btnTandaiSemua" style="color:#c0392b;font-size:0.85rem;font-weight:600;text-decoration:none">
+        &#10003;&#10003; Tandai semua telah dibaca
+    </a>
+</div>
+
+<!-- DAFTAR NOTIFIKASI -->
+<div style="display:flex;flex-direction:column;gap:12px" id="daftarNotifikasi">
+    @if (!filtered.Any())
+    {
+        <div class="bc-card" style="text-align:center;padding:48px;color:#95a5a6">
+            <div style="font-weight:600">Tidak ada notifikasi di kategori ini</div>
+            <div style="font-size:0.85rem;margin-top:4px">Semua sistem berjalan normal</div>
+        </div>
+    }
+
+    @foreach (var notif in filtered)
+    {
+        string borderColor = notif.IsUrgent ? "#c0392b" :
+                             notif.Tipe == "jadwal" ? "#2471a3" :
+                             notif.Tipe == "permintaan" ? "#27ae60" : "#95a5a6";
+
+        string iconBg = notif.IsUrgent ? "#fdecea" :
+                        notif.Tipe == "jadwal" ? "#eaf4fd" :
+                        notif.Tipe == "permintaan" ? "#e8f8f0" : "#f5f6fa";
+
+        TimeSpan selisih = DateTime.Now - notif.Waktu;
+        string waktuLabel = selisih.TotalMinutes < 60
+            ? $"{Math.Max(0, (int)selisih.TotalMinutes)} menit yang lalu"
+            : selisih.TotalHours < 24
+                ? $"{(int)selisih.TotalHours} jam yang lalu"
+                : $"{notif.Waktu:dd MMM, HH:mm}";
+
+        <div class="notif-item" data-id="@notif.Id"
+             style="background:@(notif.IsRead ? "#fbfbfc" : "#fff");border-radius:12px;border-left:4px solid @borderColor;
+                    padding:18px 22px;box-shadow:0 2px 8px rgba(0,0,0,0.05);opacity:@(notif.IsRead ? "0.7" : "1")">
+            <div style="display:flex;align-items:flex-start;gap:14px">
+                <div style="width:44px;height:44px;border-radius:10px;background:@iconBg;
+                            display:flex;align-items:center;justify-content:center;
+                            font-size:1.2rem;flex-shrink:0;color:@borderColor">
+                    <i class="fa @(notif.Tipe == "stok" ? "fa-tint" : notif.Tipe == "jadwal" ? "fa-calendar" : "fa-hand-holding-medical")"></i>
+                </div>
+
+                <div style="flex:1">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px">
+                        <div style="font-weight:700;font-size:0.95rem;color:@(notif.IsUrgent ? "#c0392b" : "#1a1a2e")">
+                            @notif.Judul
+                            @if (notif.IsUrgent)
+                            {
+                                <span style="font-size:0.72rem;background:#c0392b;color:#fff;
+                                             padding:2px 8px;border-radius:4px;margin-left:8px;
+                                             font-weight:700;letter-spacing:0.05em">URGENT</span>
+                            }
+                        </div>
+                        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+                            <span style="font-size:0.78rem;color:#95a5a6">@waktuLabel</span>
+                            @if (!notif.IsRead)
+                            {
+                                <span style="width:8px;height:8px;border-radius:50%;background:#c0392b;display:inline-block"></span>
+                            }
+                        </div>
+                    </div>
+                    <p style="font-size:0.85rem;color:#555;margin:0 0 12px 0;line-height:1.5">
+                        @notif.Pesan
+                    </p>
+
+                    <div style="display:flex;gap:8px;flex-wrap:wrap">
+                        @if (notif.Tipe == "stok")
+                        {
+                            <a href="/StokDarah" class="bc-btn-primary" style="padding:6px 16px;font-size:0.8rem;text-decoration:none">Detail Stok</a>
+                        }
+                        else if (notif.Tipe == "permintaan")
+                        {
+                            <a href="/PermintaanDarah" class="bc-btn-primary" style="padding:6px 16px;font-size:0.8rem;text-decoration:none">Proses Sekarang</a>
+                        }
+                        else if (notif.Tipe == "jadwal")
+                        {
+                            <a href="/JadwalDonor" class="bc-btn-secondary" style="padding:6px 16px;font-size:0.8rem;text-decoration:none">Lihat Jadwal</a>
+                        }
+                        @if (!notif.IsRead)
+                        {
+                            <button class="bc-btn-secondary btn-tandai-dibaca" data-id="@notif.Id" style="padding:6px 14px;font-size:0.8rem">
+                                Tandai Dibaca
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function getAntiForgeryToken() {
+            var t = document.querySelector('input[name="__RequestVerificationToken"]');
+            return t ? t.value : '';
+        }
+
+        document.addEventListener('click', function (e) {
+            if (e.target.classList.contains('btn-tandai-dibaca')) {
+                var id = e.target.getAttribute('data-id');
+                fetch('/Notifikasi/MarkAsRead', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'id=' + encodeURIComponent(id) + '&__RequestVerificationToken=' + encodeURIComponent(getAntiForgeryToken())
+                }).then(() => location.reload());
+            }
+        });
+
+        var btnSemua = document.getElementById('btnTandaiSemua');
+        if (btnSemua) {
+            btnSemua.addEventListener('click', function (e) {
+                e.preventDefault();
+                fetch('/Notifikasi/MarkAllAsRead', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: '__RequestVerificationToken=' + encodeURIComponent(getAntiForgeryToken())
+                }).then(() => location.reload());
+            });
+        }
+    </script>
+}

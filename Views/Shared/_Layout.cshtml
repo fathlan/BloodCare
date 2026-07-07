@@ -10,197 +10,313 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 <body>
-    <div class="bc-wrapper">
+<div class="bc-wrapper">
 
-        <!-- SIDEBAR -->
-        <aside class="bc-sidebar">
-            <div class="bc-sidebar-brand">
-                <div class="bc-brand-icon">🩸</div>
+    <!-- SIDEBAR -->
+    <aside class="bc-sidebar">
+        <!-- Brand -->
+        <div class="bc-sidebar-brand">
+            <div class="bc-brand-icon"></div>
                 <div>
                     <div class="bc-brand-name">BloodCare</div>
                     <div class="bc-brand-sub">Management System</div>
                 </div>
-            </div>
-
-            <nav class="bc-nav">
-                @* Dashboard - semua role yang login boleh lihat *@
-                <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")"
-                   asp-controller="Dashboard" asp-action="Index">
-                    <i class="fa fa-th-large"></i> Dashboard
-                </a>
-
-                @* Data Pendonor - HANYA ADMIN *@
-                @if (User.IsInRole("Admin"))
-                {
-                    <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Pendonors" ? "active" : "")"
-                       asp-controller="Pendonors" asp-action="Index">
-                        <i class="fa fa-user"></i> Data Pendonor
-                    </a>
-                }
-
-                @* Jadwal Donor - semua role login boleh lihat (Admin bisa kelola juga) *@
-                <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "JadwalDonor" ? "active" : "")"
-                   asp-controller="JadwalDonor" asp-action="Index">
-                    <i class="fa fa-calendar"></i> Jadwal Donor
-                </a>
-
-                @* Stok Darah - semua role login boleh lihat (Admin/Petugas bisa update) *@
-                <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "StokDarah" ? "active" : "")"
-                   asp-controller="StokDarah" asp-action="Index">
-                    <i class="fa fa-tint"></i> Stok Darah
-                </a>
-
-                @* Permintaan Darah - HANYA ADMIN *@
-                @if (User.IsInRole("Admin"))
-                {
-                    <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "PermintaanDarah" ? "active" : "")"
-                       asp-controller="PermintaanDarah" asp-action="Index">
-                        <i class="fa fa-hand-holding-medical"></i> Permintaan Darah
-                    </a>
-                }
-
-                @* Riwayat Donor - Admin, Petugas, Pendonor (masing-masing beda scope datanya nanti diatur di controller) *@
-                <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "RiwayatDonor" ? "active" : "")"
-                   asp-controller="RiwayatDonor" asp-action="Index">
-                    <i class="fa fa-history"></i> Riwayat Donor
-                </a>
-
-                @* Laporan - HANYA ADMIN *@
-                @if (User.IsInRole("Admin"))
-                {
-                    <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Laporan" ? "active" : "")"
-                       asp-controller="Laporan" asp-action="Index">
-                        <i class="fa fa-file-alt"></i> Laporan
-                    </a>
-                }
-
-                @* Notifikasi & Profil - semua role login *@
-                <a class="bc-nav-item" href="#">
-                    <i class="fa fa-bell"></i> Notifikasi
-                </a>
-                <a class="bc-nav-item" href="#">
-                    <i class="fa fa-user-circle"></i> Profil
-                </a>
-            </nav>
-
-            <div class="bc-sidebar-footer">
-                <div class="bc-user-avatar">
-                    @(User.Identity?.Name?.Substring(0, 1).ToUpper() ?? "?")
-                </div>
-                <div>
-                    <div class="bc-user-name">@(User.Identity?.Name ?? "Guest")</div>
-                    <div class="bc-user-role">
-                        Level:
-                        @(User.IsInRole("Admin") ? "Admin"
-                            : User.IsInRole("Petugas") ? "Petugas"
-                            : User.IsInRole("Pendonor") ? "Pendonor"
-                            : "-")
-                    </div>
-                </div>
-            </div>
-        </aside>
-
-        <!-- MAIN CONTENT -->
-        <div class="bc-main">
-            <!-- TOP BAR -->
-            <header class="bc-topbar">
-                <div class="bc-topbar-title">
-                    <h4 class="mb-0">BloodCare Admin</h4>
-                    <small class="text-muted">Portal Manajemen</small>
-                </div>
-                <div class="bc-topbar-right">
-                    <div class="bc-search-box">
-                        <i class="fa fa-search"></i>
-                        <input type="text" placeholder="Cari data..." />
-                    </div>
-
-                    <div class="topbar-user">
-                        @if (User.Identity != null && User.Identity.IsAuthenticated)
-                        {
-                            <span>
-                                Halo, @User.Identity.Name
-                                (@(User.IsInRole("Admin") ? "Admin" : User.IsInRole("Petugas") ? "Petugas" : "Pendonor"))
-                            </span>
-                            <form asp-controller="Auth" asp-action="Logout" method="post" style="display:inline;">
-                                <button type="submit" class="btn btn-sm btn-outline-light">Logout</button>
-                            </form>
-                        }
-                        else
-                        {
-                            <a href="/Auth/Login" class="btn btn-sm btn-light">Login</a>
-                        }
-                    </div>
-
-                    <button class="bc-icon-btn"><i class="fa fa-question-circle"></i></button>
-                    <button class="bc-icon-btn"><i class="fa fa-cog"></i></button>
-                    <div class="bc-topbar-avatar">
-                        @(User.Identity?.Name?.Substring(0, 1).ToUpper() ?? "?")
-                    </div>
-                </div>
-            </header>
-
-            <!-- PAGE CONTENT -->
-            <main class="bc-content">
-                @RenderBody()
-            </main>
         </div>
+
+        <!-- Nav Menu -->
+        <nav class="bc-nav">
+            <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")"
+               asp-controller="Dashboard" asp-action="Index">
+                <i class="fa fa-th-large"></i> Dashboard
+            </a>
+            @if (User.IsInRole("Admin"))
+            {
+                <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Pendonors" ? "active" : "")"
+                   asp-controller="Pendonors" asp-action="Index">
+                    <i class="fa fa-user"></i> Data Pendonor
+                </a>
+            }
+            <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "RiwayatDonor" ? "active" : "")"
+               asp-controller="RiwayatDonor" asp-action="Index">
+                <i class="fa fa-history"></i> Riwayat Donor
+            </a>
+            @if (User.IsInRole("Admin") || User.IsInRole("Petugas"))
+            {
+                <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "PendaftaranJadwal" && ViewContext.RouteData.Values["action"]?.ToString() == "Kehadiran" ? "active" : "")"
+                   asp-controller="PendaftaranJadwal" asp-action="Kehadiran">
+                    <i class="fa fa-clipboard-check"></i> Verifikasi Kehadiran
+                </a>
+            }
+            @if (User.IsInRole("Pendonor"))
+            {
+                <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "PendaftaranJadwal" ? "active" : "")"
+                   asp-controller="PendaftaranJadwal" asp-action="MyIndex">
+                    <i class="fa fa-clipboard-list"></i> Jadwal Saya
+                </a>
+            }
+            <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "JadwalDonor" ? "active" : "")"
+               asp-controller="JadwalDonor" asp-action="Index">
+                <i class="fa fa-calendar"></i> Jadwal Donor
+            </a>
+            <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "StokDarah" ? "active" : "")"
+               asp-controller="StokDarah" asp-action="Index">
+                <i class="fa fa-tint"></i> Stok Darah
+            </a>
+            @if (User.IsInRole("Admin"))
+            {
+                <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "PermintaanDarah" ? "active" : "")"
+                   asp-controller="PermintaanDarah" asp-action="Index">
+                    <i class="fa fa-hand-holding-medical"></i> Permintaan Darah
+                </a>
+                <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Laporan" ? "active" : "")"
+                   asp-controller="Laporan" asp-action="Index">
+                    <i class="fa fa-chart-bar"></i> Laporan
+                </a>
+                <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "UserManagement" ? "active" : "")"
+                   asp-controller="UserManagement" asp-action="Index">
+                    <i class="fa fa-users-cog"></i> Manajemen User
+                </a>
+                <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "AuditLog" ? "active" : "")"
+                   asp-controller="AuditLog" asp-action="Index">
+                    <i class="fa fa-clipboard-list"></i> Audit Trail
+                </a>
+            }
+                @if (!User.IsInRole("Pendonor"))
+                {
+                    <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Notifikasi" ? "active" : "")"
+                       asp-controller="Notifikasi" asp-action="Index">
+                        <i class="fa fa-bell"></i> Notifikasi
+                    </a>
+                }
+}
+            <a class="bc-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Profile" ? "active" : "")"
+               asp-controller="Profile" asp-action="Index">
+                <i class="fa fa-user-circle"></i> Profil
+            </a>
+        </nav>
+
+        <!-- User Info (dinamis dari Identity) -->
+        <div class="bc-sidebar-footer">
+            @if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                string displayName = User.Identity.Name ?? "User";
+                string[] nameParts = displayName.Split(new[] { '@', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                string initials = nameParts.Length >= 2
+                    ? nameParts[0].Substring(0, 1).ToUpper() + nameParts[1].Substring(0, 1).ToUpper()
+                    : displayName.Substring(0, Math.Min(2, displayName.Length)).ToUpper();
+                string roleLabel = User.IsInRole("Admin") ? "Superadmin" :
+                                   User.IsInRole("Petugas") ? "Petugas PMI" : "Pendonor";
+
+                <div class="bc-user-avatar">@initials</div>
+                <div style="overflow:hidden">
+                    <div class="bc-user-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                        @(ViewBag.NamaUser ?? displayName)
+                    </div>
+                    <div class="bc-user-role">Level: @roleLabel</div>
+                </div>
+            }
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="bc-main">
+        <!-- TOPBAR -->
+        <header class="bc-topbar">
+            <div class="bc-topbar-title">
+                
+            </div>
+            <div class="bc-topbar-right">
+                <div class="bc-search-box">
+                    <i class="fa fa-search"></i>
+                    <input type="text" placeholder="Cari data..." />
+                </div>
+                <button class="bc-icon-btn" title="Bantuan"><i class="fa fa-question-circle"></i></button>
+                <button class="bc-icon-btn" title="Pengaturan"><i class="fa fa-cog"></i></button>
+
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <div class="dropdown">
+                        <button class="bc-icon-btn" id="bellNotifikasi" data-bs-toggle="dropdown"
+                                data-bs-auto-close="outside" title="Notifikasi" style="position:relative">
+                            <i class="fa fa-bell"></i>
+                            <span id="badgeNotif"
+                                  style="display:none;position:absolute;top:2px;right:2px;background:#c0392b;color:#fff;
+                                         font-size:0.62rem;font-weight:700;border-radius:10px;min-width:16px;height:16px;
+                                         line-height:16px;text-align:center;padding:0 4px">0</span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end p-0" style="width:340px;max-width:90vw">
+                            <div style="padding:12px 16px;font-weight:700;border-bottom:1px solid #f0f0f0">Notifikasi</div>
+                            <div id="isiDropdownNotif" style="text-align:center;padding:24px;color:#95a5a6;font-size:0.85rem">
+                                Memuat...
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    string tpName = ViewBag.NamaUser?.ToString() ?? User.Identity.Name ?? "U";
+                    string tpInit = tpName.Split(new[] { ' ', '@' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Take(2)
+                        .Aggregate("", (a, b) => a + b.Substring(0, 1).ToUpper());
+
+                    <div class="dropdown">
+                        <div class="bc-topbar-avatar" data-bs-toggle="dropdown" style="cursor:pointer"
+                             title="@tpName">
+                            @tpInit
+                        </div>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <span class="dropdown-item-text fw-bold">@tpName</span>
+                            </li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li>
+                                <form asp-controller="Auth" asp-action="Logout" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="fa fa-sign-out-alt me-2"></i> Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                }
+            </div>
+        </header>
+
+        <!-- CONTENT -->
+        <main class="bc-content">
+            @RenderBody()
+        </main>
     </div>
+</div>
 
-    <!-- FAB Button -->
-    <button class="bc-fab"><i class="fa fa-plus"></i></button>
+<!-- FAB -->
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+@if (User.Identity != null && User.Identity.IsAuthenticated)
+{
+    <form id="globalAntiForgeryForm">@Html.AntiForgeryToken()</form>
 
     <script>
-        var sweetSuccess = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["SweetSuccess"]?.ToString() ?? ""));
-        var sweetError = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["SweetError"]?.ToString() ?? ""));
+        (function () {
+            function getToken() {
+                var el = document.querySelector('#globalAntiForgeryForm input[name="__RequestVerificationToken"]');
+                return el ? el.value : '';
+            }
 
-        if (sweetSuccess) {
-        Swal.fire({
-        icon: 'success',
-        title: 'Berhasil!',
-        text: sweetSuccess,
-        timer: 2500,
-        timerProgressBar: true,
-        showConfirmButton: false,
-        customClass: { popup: 'bc-swal' }
-        });
-        }
+            function muatBadge() {
+                fetch('/Notifikasi/UnreadCount')
+                    .then(r => r.json())
+                    .then(data => {
+                        var badge = document.getElementById('badgeNotif');
+                        if (!badge) return;
+                        if (data.count > 0) {
+                            badge.style.display = 'block';
+                            badge.textContent = data.count > 9 ? '9+' : data.count;
+                        } else {
+                            badge.style.display = 'none';
+                        }
+                    })
+                    .catch(() => {});
+            }
 
-        if (sweetError) {
-        Swal.fire({
-        icon: 'error',
-        title: 'Gagal!',
-        text: sweetError,
-        confirmButtonColor: '#c0392b'
-        });
-        }
+            function muatDropdown() {
+                var isi = document.getElementById('isiDropdownNotif');
+                if (!isi) return;
+                isi.innerHTML = '<div style="text-align:center;padding:24px;color:#95a5a6;font-size:0.85rem">Memuat...</div>';
+                fetch('/Notifikasi/Dropdown')
+                    .then(r => r.text())
+                    .then(html => { isi.innerHTML = html; })
+                    .catch(() => { isi.innerHTML = '<div style="text-align:center;padding:24px;color:#95a5a6;font-size:0.85rem">Gagal memuat notifikasi</div>'; });
+            }
 
-        document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.btn-confirm-delete').forEach(function (btn) {
-        btn.addEventListener('click', function (e) {
-        e.preventDefault();
-        var form = this.closest('form');
-        var nama = this.getAttribute('data-nama') || 'data ini';
-        Swal.fire({
-        icon: 'warning',
-        title: 'Hapus Data?',
-        text: 'Data "' + nama + '" akan dihapus permanen!',
-        showCancelButton: true,
-        confirmButtonColor: '#c0392b',
-        cancelButtonColor: '#7f8c8d',
-        confirmButtonText: 'Ya, Hapus!',
-        cancelButtonText: 'Batal'
-        }).then(function (result) {
-        if (result.isConfirmed) form.submit();
-        });
-        });
-        });
-        });
+            document.addEventListener('DOMContentLoaded', function () {
+                muatBadge();
+
+                var bell = document.getElementById('bellNotifikasi');
+                if (bell) {
+                    bell.addEventListener('click', muatDropdown);
+                }
+
+                // Klik satu notifikasi di dalam dropdown -> tandai dibaca tanpa pindah halaman
+                document.addEventListener('click', function (e) {
+                    var item = e.target.closest('.bc-notif-dropdown-item');
+                    if (!item) return;
+
+                    var id = item.getAttribute('data-id');
+                    item.style.opacity = '0.5';
+
+                    fetch('/Notifikasi/MarkAsRead', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: 'id=' + encodeURIComponent(id) + '&__RequestVerificationToken=' + encodeURIComponent(getToken())
+                    })
+                        .then(r => r.json())
+                        .then(() => {
+                            item.style.background = '#fff';
+                            var dot = item.querySelector('div[style*="border-radius:50%"]');
+                            if (dot) dot.style.background = 'transparent';
+                            muatBadge();
+                        });
+                });
+            });
+        })();
     </script>
+}
 
-    @await RenderSectionAsync("Scripts", required: false)
+<script>
+    @if (TempData["SweetSuccess"] != null)
+    {
+        <text>
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: '@TempData["SweetSuccess"]',
+            timer: 2500,
+            timerProgressBar: true,
+            showConfirmButton: false
+        });
+        </text>
+    }
+    @if (TempData["SweetError"] != null)
+    {
+        <text>
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal!',
+            text: '@TempData["SweetError"]',
+            confirmButtonColor: '#c0392b'
+        });
+        </text>
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.btn-confirm-delete').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                var form = this.closest('form');
+                var nama = this.getAttribute('data-nama') || 'data ini';
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Hapus Data?',
+                    text: 'Data "' + nama + '" akan dihapus permanen!',
+                    showCancelButton: true,
+                    confirmButtonColor: '#c0392b',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal'
+                }).then(function (result) {
+                    if (result.isConfirmed) form.submit();
+                });
+            });
+        });
+    });
+</script>
+
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
