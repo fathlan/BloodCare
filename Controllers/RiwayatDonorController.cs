@@ -64,11 +64,20 @@ namespace BloodCare.Controllers
             ViewBag.TargetHarianPersen = targetHarian == 0 ? 0 : Math.Min(100, (int)(totalHariIni * 100.0 / targetHarian));
 
             // Daftar jadwal donor yang masih aktif, untuk dropdown Lokasi Donor
-            // pada mode "Pendonor Baru" di form input manual
+            // pada form input manual (walk-in)
             ViewBag.DaftarJadwal = await _context.JadwalDonors
                 .Where(j => j.Tanggal.Date >= hariIni)
                 .OrderBy(j => j.Tanggal)
                 .Select(j => new { j.Id, j.Lokasi, j.Tanggal })
+                .ToListAsync();
+
+            // Satu-satunya sumber nama untuk Select2 di form manual: tabel Pendonors
+            // (data yang sudah diinput lewat fitur "Tambah Pendonor"). Tidak ada lagi
+            // jalur "Pendonor Baru" ketik manual, dan tidak ada lagi grup "Kehadiran"
+            // di sini -- pendonor yang punya akun & daftar jadwal diinput lewat
+            // alur Kehadiran -> Create(pendaftaranId).
+            ViewBag.DaftarPendonor = await _context.Pendonors
+                .OrderBy(p => p.NamaLengkap)
                 .ToListAsync();
 
             return View(terkini);

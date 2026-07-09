@@ -21,7 +21,8 @@
 </div>
 
 <!-- STAT CARDS -->
-<div class="bc-stat-grid mb-4">
+<!-- STAT CARDS -->
+<div class="bc-stat-grid mb-4" style="grid-template-columns: repeat(3, 1fr);">
     <!-- Total Pendonor -->
     <div class="bc-stat-card">
         <div class="bc-stat-icon red">
@@ -69,20 +70,7 @@
             <i class="fa fa-clock"></i> @ViewBag.PermintaanMenunggu Menunggu verifikasi
         </div>
     </div>
-
-    <!-- Notifikasi -->
-    <div class="bc-stat-card">
-        <div class="bc-stat-icon purple">
-            <i class="fa fa-bell"></i>
-        </div>
-        <div class="bc-stat-label">Notifikasi Baru</div>
-        <div class="bc-stat-value">@ViewBag.TotalNotifikasi</div>
-        <div class="bc-stat-sub alert">
-            <i class="fa fa-exclamation-circle"></i> @ViewBag.NotifikasiMendesak Sangat Mendesak
-        </div>
-    </div>
 </div>
-
 <!-- BOTTOM ROW -->
 <div class="row g-3">
 
