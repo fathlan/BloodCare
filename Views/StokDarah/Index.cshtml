@@ -55,7 +55,6 @@
         <span class="bc-card-title">Daftar Stok Darah</span>
         @if (!User.IsInRole("Pendonor"))
         {
-            <a asp-action="Create" class="bc-btn-primary" style="padding:6px 16px;font-size:0.82rem;text-decoration:none">+ Tambah</a>
         }
     </div>
     <table class="bc-table">
@@ -75,14 +74,18 @@
             </tr>
         </thead>
         <tbody>
-            @{ int totalKolom = User.IsInRole("Pendonor") ? 4 : 8; }
+            @{
+                int totalKolom = User.IsInRole("Pendonor") ? 4 : 8;
+            }
             @if (!Model.Any())
             {
                 <tr>
                     <td colspan="@totalKolom" style="text-align:center;padding:32px;color:#95a5a6">Belum ada data stok darah</td>
                 </tr>
             }
-            @{ int no = 1; }
+            @{
+                int no = 1;
+            }
             @foreach (var item in Model)
             {
                 string statusLabel = item.JumlahKantong == 0 ? "Habis" :
@@ -121,7 +124,9 @@
                                 <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline">
                                     @Html.AntiForgeryToken()
                                     <button type="submit" class="bc-btn-del btn-confirm-delete"
-                                            data-nama="Gol @item.GolonganDarah@item.Rhesus">Hapus</button>
+                                            data-nama="Gol @item.GolonganDarah@item.Rhesus">
+                                        Hapus
+                                    </button>
                                 </form>
                             </div>
                         </td>

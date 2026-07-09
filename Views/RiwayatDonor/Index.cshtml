@@ -12,8 +12,7 @@
         </p>
     </div>
     <button type="button" id="btnToggleForm" class="bc-hero-btn">
-        <i class="fa @(bukaForm ? "fa-minus" : "fa-plus")"></i>
-        <span id="btnToggleFormText">@(bukaForm ? "Tutup Form" : "Input Riwayat Baru")</span>
+        <span id="btnToggleFormText">@(bukaForm ? "− Tutup Form" : "+ Input Riwayat Baru")</span>
     </button>
 </div>
 
@@ -21,39 +20,27 @@
     <form asp-controller="RiwayatDonor" asp-action="Create" method="post" id="formRiwayat">
         @Html.AntiForgeryToken()
 
-        <!-- TOGGLE MODE: Pendonor Terdaftar / Pendonor Baru -->
-        <div class="bc-card mb-3" style="padding:16px 26px">
-            <div class="btn-group w-100" role="group">
-                <input type="radio" class="btn-check" name="modePendonor" id="modeTerdaftar" checked>
-                <label class="btn btn-outline-danger" for="modeTerdaftar">
-                    <i class="fa fa-user-check"></i> Pendonor Terdaftar
-                </label>
-
-                <input type="radio" class="btn-check" name="modePendonor" id="modeBaru">
-                <label class="btn btn-outline-danger" for="modeBaru">
-                    <i class="fa fa-user-plus"></i> Pendonor Baru (Belum Terdaftar)
-                </label>
-            </div>
-        </div>
-
         <div class="bc-card mb-4" style="padding:26px">
             <div class="row g-3">
 
-                <!-- MODE TERDAFTAR: cari via Select2 -->
-                <div class="col-md-6 mode-terdaftar">
+                <!-- NAMA PENDONOR: Select2, satu-satunya sumber = tabel Pendonors -->
+                <div class="col-md-6">
                     <label class="form-label fw-semibold">Nama Pendonor</label>
-                    <select id="namaPendonorSelect" class="form-select" style="width:100%"></select>
+                    <select id="namaPendonorSelect" class="form-select" style="width:100%" required>
+                        <option value=""></option>
+                        @foreach (var p in (List<BloodCare.Models.Pendonor>)ViewBag.DaftarPendonor)
+                        {
+                            <option value="@p.Id" data-golongan="@p.GolonganDarah" data-rhesus="@p.Rhesus" data-nama="@p.NamaLengkap">
+                                @p.NamaLengkap &mdash; @p.GolonganDarah@p.Rhesus (@p.NoHp)
+                            </option>
+                        }
+                    </select>
                     <input type="hidden" id="pendonorIdHidden" name="PendonorId" />
+                    <input type="hidden" id="namaPendonorHidden" name="NamaPendonor" />
+                    <div class="form-text">
+                        Nama belum ada di daftar? <a asp-controller="Pendonors" asp-action="Create" target="_blank">Tambah Pendonor baru</a> dulu.
+                    </div>
                 </div>
-
-                <!-- MODE BARU: input manual -->
-                <div class="col-md-6 mode-baru" style="display:none">
-                    <label class="form-label fw-semibold">Nama Pendonor</label>
-                    <input type="text" id="namaPendonorManual" class="form-control" placeholder="Masukkan nama lengkap" />
-                </div>
-
-                <!-- hidden field yang benar dikirim ke server -->
-                <input type="hidden" id="namaPendonorHidden" name="NamaPendonor" />
 
                 <div class="col-md-6">
                     <label class="form-label fw-semibold">Tanggal Donor</label>
@@ -61,19 +48,10 @@
                            value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
                 </div>
 
-                <!-- hidden field yang benar dikirim ke server -->
-                <input type="hidden" id="lokasiDonorHidden" name="LokasiDonor" />
-
-                <!-- MODE TERDAFTAR: bebas ketik -->
-                <div class="col-md-6 mode-terdaftar">
+                <!-- LOKASI DONOR: pilih dari jadwal donor yang masih aktif -->
+                <div class="col-md-6">
                     <label class="form-label fw-semibold">Lokasi Donor</label>
-                    <input type="text" id="lokasiDonor" class="form-control" placeholder="Contoh: Gedung Serbaguna PMI" />
-                </div>
-
-                <!-- MODE BARU: pilih dari jadwal donor yang masih aktif -->
-                <div class="col-md-6 mode-baru" style="display:none">
-                    <label class="form-label fw-semibold">Lokasi Donor</label>
-                    <select id="lokasiDonorSelect" class="form-select">
+                    <select id="lokasiDonorSelect" class="form-select" required>
                         <option value="">-- Pilih Jadwal Donor --</option>
                         @foreach (var j in (IEnumerable<dynamic>)ViewBag.DaftarJadwal)
                         {
@@ -84,6 +62,7 @@
                         <option value="__manual__">Lokasi Lain (isi manual)</option>
                     </select>
                     <input type="text" id="lokasiDonorManualInput" class="form-control mt-2" style="display:none" placeholder="Tulis nama lokasi..." />
+                    <input type="hidden" id="lokasiDonorHidden" name="LokasiDonor" />
                     <input type="hidden" id="jadwalDonorIdHidden" name="JadwalDonorId" />
                 </div>
 
@@ -92,34 +71,14 @@
                     <input type="number" name="JumlahDarahMl" class="form-control" placeholder="Contoh: 350" min="50" max="1000" required />
                 </div>
 
-                <!-- MODE TERDAFTAR: readonly, otomatis dari data pendonor -->
-                <div class="col-md-6 mode-terdaftar">
+                <!-- GOLONGAN DARAH & RHESUS: selalu readonly, otomatis dari data Pendonor -->
+                <div class="col-md-6">
                     <label class="form-label fw-semibold">Golongan Darah</label>
-                    <input type="text" id="golonganDarah" name="GolonganDarah" class="form-control bg-light" readonly placeholder="Otomatis dari data pendonor" />
+                    <input type="text" id="golonganDarah" name="GolonganDarah" class="form-control bg-light" readonly placeholder="Pilih pendonor dulu" />
                 </div>
-                <div class="col-md-6 mode-terdaftar">
+                <div class="col-md-6">
                     <label class="form-label fw-semibold">Rhesus</label>
-                    <input type="text" id="rhesus" name="Rhesus" class="form-control bg-light" readonly placeholder="Otomatis dari data pendonor" />
-                </div>
-
-                <!-- MODE BARU: dropdown manual -->
-                <div class="col-md-6 mode-baru" style="display:none">
-                    <label class="form-label fw-semibold">Golongan Darah</label>
-                    <select id="golonganDarahManual" class="form-select">
-                        <option value="">-- Pilih --</option>
-                        <option value="A">A</option>
-                        <option value="B">B</option>
-                        <option value="AB">AB</option>
-                        <option value="O">O</option>
-                    </select>
-                </div>
-                <div class="col-md-6 mode-baru" style="display:none">
-                    <label class="form-label fw-semibold">Rhesus</label>
-                    <select id="rhesusManual" class="form-select">
-                        <option value="">-- Pilih --</option>
-                        <option value="+">Positif (+)</option>
-                        <option value="-">Negatif (-)</option>
-                    </select>
+                    <input type="text" id="rhesus" name="Rhesus" class="form-control bg-light" readonly placeholder="Pilih pendonor dulu" />
                 </div>
 
                 <div class="col-12">
@@ -199,8 +158,7 @@
             $('#btnToggleForm').on('click', function () {
                 $('#formWrapper').slideToggle(200, function () {
                     var isVisible = $('#formWrapper').is(':visible');
-                    $('#btnToggleForm i').toggleClass('fa-plus', !isVisible).toggleClass('fa-minus', isVisible);
-                    $('#btnToggleFormText').text(isVisible ? 'Tutup Form' : 'Input Riwayat Baru');
+                    $('#btnToggleFormText').text(isVisible ? '− Tutup Form' : '+ Input Riwayat Baru');
 
                     if (isVisible) {
                         $('html, body').animate({ scrollTop: $('#formWrapper').offset().top - 20 }, 300);
@@ -210,51 +168,38 @@
 
             $('#btnBatalForm').on('click', function () {
                 $('#formWrapper').slideUp(200);
-                $('#btnToggleForm i').removeClass('fa-minus').addClass('fa-plus');
-                $('#btnToggleFormText').text('Input Riwayat Baru');
+                $('#btnToggleFormText').text('+ Input Riwayat Baru');
                 resetForm();
             });
 
             function resetForm() {
                 $('#formRiwayat')[0].reset();
                 $('#namaPendonorSelect').val(null).trigger('change');
-                $('#pendonorIdHidden, #namaPendonorHidden, #golonganDarah, #rhesus, #lokasiDonorHidden, #jadwalDonorIdHidden, #lokasiDonor').val('');
+                $('#pendonorIdHidden, #namaPendonorHidden, #golonganDarah, #rhesus, #lokasiDonorHidden, #jadwalDonorIdHidden').val('');
                 $('#lokasiDonorSelect').val('');
                 $('#lokasiDonorManualInput').hide().val('');
-                $('#modeTerdaftar').prop('checked', true);
-                setMode(false);
             }
 
-            //SELECT2: CARI PENDONOR TERDAFTAR
+            // SELECT2: pilih dari daftar Pendonors yang sudah di-preload
+            // (sumbernya sama dengan fitur "Tambah Pendonor" -- tanpa ajax, tanpa ketik manual)
             $('#namaPendonorSelect').select2({
-                placeholder: 'Ketik nama atau ID pendonor...',
-                minimumInputLength: 1,
-                ajax: {
-                    url: '@Url.Action("Select2Search", "Pendonors")',
-                    dataType: 'json',
-                    delay: 250,
-                    data: function (params) { return { term: params.term, page: params.page || 1 }; },
-                    processResults: function (data) { return data; }
-                }
+                placeholder: 'Ketik atau pilih nama pendonor...',
+                width: '100%'
             });
 
             $('#namaPendonorSelect').on('select2:select', function (e) {
-                var d = e.params.data;
-                $('#pendonorIdHidden').val(d.id);
-                $('#namaPendonorHidden').val(d.namaLengkap || '');
-                $('#golonganDarah').val(d.golonganDarah || '');
-                $('#rhesus').val(d.rhesus || '');
-                if (d.alamat) { $('#lokasiDonor').attr('placeholder', d.alamat); }
+                var opt = $(this).find('option:selected');
+                $('#pendonorIdHidden').val(opt.val());
+                $('#namaPendonorHidden').val(opt.data('nama'));
+                $('#golonganDarah').val(opt.data('golongan'));
+                $('#rhesus').val(opt.data('rhesus'));
             });
 
-            //LOKASI DONOR
-
-            // Mode terdaftar: bebas ketik
-            $('#lokasiDonor').on('input', function () {
-                $('#lokasiDonorHidden').val($(this).val());
+            $('#namaPendonorSelect').on('select2:clear', function () {
+                $('#pendonorIdHidden, #namaPendonorHidden, #golonganDarah, #rhesus').val('');
             });
 
-            // Mode baru: pilih dari jadwal aktif
+            // LOKASI DONOR: pilih dari jadwal aktif, atau isi manual kalau tidak ada di daftar
             $('#lokasiDonorSelect').on('change', function () {
                 var val = $(this).val();
                 var jadwalId = $(this).find(':selected').data('jadwalid') || '';
@@ -274,67 +219,17 @@
                 $('#lokasiDonorHidden').val($(this).val());
             });
 
-            // TOGGLE MODE: PENDONOR TERDAFTAR / BARU
-            function setMode(baru) {
-                if (baru) {
-                    $('.mode-terdaftar').hide();
-                    $('.mode-baru').show();
-                    $('#pendonorIdHidden').val('');
-                    $('#lokasiDonor').val('');
-                    $('#lokasiDonorHidden').val('');
-                } else {
-                    $('.mode-baru').hide();
-                    $('.mode-terdaftar').show();
-                    $('#namaPendonorManual').val('');
-                    $('#golonganDarahManual').val('');
-                    $('#rhesusManual').val('');
-                    $('#lokasiDonorSelect').val('');
-                    $('#lokasiDonorManualInput').hide().val('');
-                    $('#jadwalDonorIdHidden').val('');
-                    $('#lokasiDonorHidden').val('');
-                }
-            }
-
-            $('#modeTerdaftar').on('change', function () { if (this.checked) setMode(false); });
-            $('#modeBaru').on('change', function () { if (this.checked) setMode(true); });
-
-            // Sinkronisasi field manual -> hidden field yang dikirim ke server
-            $('#namaPendonorManual').on('input', function () {
-                $('#namaPendonorHidden').val($(this).val());
-            });
-            $('#golonganDarahManual').on('change', function () {
-                $('#golonganDarah').val($(this).val());
-            });
-            $('#rhesusManual').on('change', function () {
-                $('#rhesus').val($(this).val());
-            });
-
             //VALIDASI
             $('#formRiwayat').on('submit', function (e) {
-                var isBaru = $('#modeBaru').is(':checked');
-
-                if (!isBaru && !$('#namaPendonorHidden').val()) {
+                if (!$('#pendonorIdHidden').val()) {
                     e.preventDefault();
-                    alert('Silakan pilih pendonor terlebih dahulu dari daftar yang terdaftar.');
+                    alert('Silakan pilih nama pendonor dari daftar terlebih dahulu.');
                     return;
                 }
-
-                if (isBaru) {
-                    if (!$('#namaPendonorManual').val().trim()) {
-                        e.preventDefault();
-                        alert('Silakan isi nama pendonor.');
-                        return;
-                    }
-                    if (!$('#golonganDarahManual').val() || !$('#rhesusManual').val()) {
-                        e.preventDefault();
-                        alert('Silakan pilih golongan darah dan rhesus.');
-                        return;
-                    }
-                    if (!$('#lokasiDonorHidden').val().trim()) {
-                        e.preventDefault();
-                        alert('Silakan pilih atau isi lokasi donor.');
-                        return;
-                    }
+                if (!$('#lokasiDonorHidden').val().trim()) {
+                    e.preventDefault();
+                    alert('Silakan pilih atau isi lokasi donor.');
+                    return;
                 }
             });
         });
